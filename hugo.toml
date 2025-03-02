@@ -1,4 +1,4 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://mesa-leuven.4d-star.org/tutorials/'
 languageCode = 'en-us'
 title = 'MESA School Leuven 2025'
 
@@ -7,29 +7,34 @@ theme = 'Hextra'
 [params.search]
 enable = false
 
+[params.navbar.logo]
+path = '/tutorials/logo.png'
+width = 50
+height = 50
+
 [[menu.main]]
 name = 'Monday'
-pageRef = '/monday'
+pageRef = '/monday/'
 weight = 1
 
 [[menu.main]]
 name = 'Tuesday'
-pageRef = '/tuesday'
+pageRef = '/tuesday/'
 weight = 2
 
 [[menu.main]]
 name = 'Wednesday'
-pageRef = '/wednesday'
+pageRef = '/wednesday/'
 weight = 3
 
 [[menu.main]]
 name = 'Thursday'
-pageRef = '/thursday'
+pageRef = '/thursday/'
 weight = 4
 
 [[menu.main]]
 name = 'Friday'
-pageRef = '/friday'
+pageRef = '/friday/'
 weight = 5
 
 [markup.goldmark.extensions.passthrough]

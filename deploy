@@ -1,0 +1,3 @@
+#!/bin/sh
+
+hugo && rsync -avz --delete public/ vincentva@4d:/var/www/mesa/wordpress/tutorials/

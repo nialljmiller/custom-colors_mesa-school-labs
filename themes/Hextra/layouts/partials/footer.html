@@ -35,9 +35,18 @@
       <div
         class="{{ $footerWidth }} hx-mx-auto hx-flex hx-justify-center hx-py-12 hx-pl-[max(env(safe-area-inset-left),1.5rem)] hx-pr-[max(env(safe-area-inset-right),1.5rem)] hx-text-gray-600 dark:hx-text-gray-400 md:hx-justify-start"
       >
-        <div class="hx-flex hx-w-full hx-flex-col hx-items-center sm:hx-items-start">
+        <div class="hx-flex hx-flex-col hx-items-center sm:hx-items-start">
             {{- if (.Site.Params.footer.displayPoweredBy | default true) }}<div class="hx-font-semibold">{{ template "theme-credit" $poweredBy }}</div>{{- end -}}
             {{- if .Site.Params.footer.displayCopyright }}<div class="hx-mt-6 hx-text-xs">{{ $copyright | markdownify }}</div>{{- end -}}
+        </div>
+        <div class="hx-grow hx-flex hx-flex-col hx-items-end">
+          <span>
+            © MESA School Leuven 2025
+          </span>
+          <br>
+          <span>
+          Except otherwise noted, content on this site is licensed under the <a class="hx-underline" href="https://creativecommons.org/licenses/by-sa/4.0/">Creative-Commons Attribution-ShareAlike 4.0 International license</a>
+          </span>
         </div>
       </div>
     {{- end -}}
@@ -52,4 +61,5 @@
       {{- end -}}
     </span>
   </a>
+
 {{- end -}}

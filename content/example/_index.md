@@ -5,7 +5,7 @@ toc: false
 ---
 
 {{< cards >}}
- {{< card link="morning-session" title="Introducing MESA" >}}
+ {{< card link="morning-session" title="Example of how to do things in Markdown" >}}
 {{< /cards >}}
 
 # Overshooting in (massive) stars
