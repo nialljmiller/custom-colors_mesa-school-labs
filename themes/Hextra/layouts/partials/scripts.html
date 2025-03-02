@@ -1,0 +1,16 @@
+{{/* Core scripts (theme, menu, tabs, etc.) */}}
+{{- partial "scripts/core.html" . -}}
+
+{{/* Search */}}
+{{- partial "scripts/search.html" . -}}
+
+{{/* Mermaid */}}
+{{/* FIXME: need to investigate .Page.Store hasMermaid is set for homepage */}}
+{{- if and (.Page.Store.Get "hasMermaid") (not .Page.IsHome) -}}
+  {{- partial "scripts/mermaid.html" . -}}
+{{- end -}}
+
+{{/* KaTex */}}
+{{- if .Page.Params.math -}}
+  {{- partial "scripts/katex.html" . -}}
+{{- end -}}
