@@ -8,7 +8,7 @@ theme = 'Hextra'
 enable = false
 
 [params.navbar.logo]
-path = '/tutorials/logo.png'
+path = 'logo.png'
 width = 50
 height = 50
 
