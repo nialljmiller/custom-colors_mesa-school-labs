@@ -721,6 +721,9 @@ TA for assistance with that.
 20. Now let's wrap up this lab by reading your MESA output in using Python
 and making some custom plots.
 
+For an itroduction into utilising python as an analysis tool, see [`bonus_tasks/README.md`](https://github.com/nialljmiller/mesa-school-labs/tree/main/content/monday/lab1/bonus_tasks/README.md).
+
+
 ---
 
 ### F :  BONUS: Batch Parameter Studies with MESA
