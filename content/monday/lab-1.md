@@ -715,8 +715,9 @@ If you got stuck and cannot get your inlist to run, you can find
 and output filenames and directory according to your parameter set though. Ask your
 TA for assistance with that.
 
+---
 
-### E :  Plotting MESA output
+### E :  BONUS: Plotting MESA output
 
 20. Now let's wrap up this lab by reading your MESA output in using Python
 and making some custom plots.
@@ -724,11 +725,7 @@ and making some custom plots.
 For an itroduction into utilising python as an analysis tool, see [`python_analysis/README.md`](https://github.com/nialljmiller/mesa-school-labs/tree/main/content/monday/lab1/bonus_tasks/python_analysis/README.md).
 
 
----
-
 ### F :  BONUS: Batch Parameter Studies with MESA
-
-
 
 If you've completed the main lab activities and have time remaining, explore the automated parameter study framework in the [`bonus_tasks/`](https://github.com/nialljmiller/mesa-school-labs/tree/main/content/monday/lab1/bonus_tasks) directory. This framework enables systematic exploration of overshooting effects across a grid of stellar model parameters.
 
