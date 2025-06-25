@@ -273,7 +273,7 @@ documentation is easier to navigate if you don't know the name of the relevant f
 In the panel on the left of the website, navigate to *Reference and Defaults > controls*. On the right, you can now see the contents of this page. Mass loss by winds is found under *mass gain and loss*.
 
 > [!TIP]
->NB All apart from the most recent MESA build, this is the the path to controls: "Reference > star defaults > controls"
+>All apart from the most recent MESA build, this is the the path to controls: "Reference > star defaults > controls"
 >If you are using the most recent MESA build then the path is "Reference and Defaults > controls"
 
 
