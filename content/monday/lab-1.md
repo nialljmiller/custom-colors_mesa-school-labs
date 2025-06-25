@@ -728,6 +728,8 @@ and making some custom plots.
 
 ### F :  BONUS: Batch Parameter Studies with MESA
 
-If you've completed the main lab activities and have time remaining, explore the automated parameter study framework in the [`bonus_tasks/`](https://github.com/nialljmiller/mesalabs-day1/tree/main/content/monday/lab1/bonus_tasks) directory. This framework enables systematic exploration of overshooting effects across a grid of stellar model parameters.
 
-For complete documentation and additional analysis tools, see [`bonus_tasks/README.md`](https://github.com/nialljmiller/mesalabs-day1/tree/main/content/monday/lab1/bonus_tasks/README.md).
+
+If you've completed the main lab activities and have time remaining, explore the automated parameter study framework in the [`bonus_tasks/`](https://github.com/nialljmiller/mesa-school-labs/tree/main/content/monday/lab1/bonus_tasks) directory. This framework enables systematic exploration of overshooting effects across a grid of stellar model parameters.
+
+For complete documentation and additional analysis tools, see [`bonus_tasks/README.md`](https://github.com/nialljmiller/mesa-school-labs/tree/main/content/monday/lab1/bonus_tasks/README.md).
