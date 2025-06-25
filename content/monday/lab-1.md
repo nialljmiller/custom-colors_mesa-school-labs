@@ -599,11 +599,8 @@ cd png
 and then we can use one of the following to create a video with one of the following:
 ```bash
 ffmpeg -r 10 -i %06d.png -c:v libx264 evolution.mp4
-magick convert *.png evolution.gif
 convert *.png evolution.gif
-magick  *.png evolution.gif
 ```
-You can also try "https://ezgif.com/maker".
 
 
 
