@@ -1,2 +1,9 @@
 inlist_name,runtime_seconds,completion_status
 inlist_M15_Z0.0014_exponential_fov0.01_f00.001,380,completed
+inlist_M2_Z0.0140_noovs,182,completed
+inlist_M2_Z0.0140_exponential_fov0.01_f00.001,164,completed
+inlist_M2_Z0.0140_exponential_fov0.01_f00.005,132,completed
+inlist_M2_Z0.0140_exponential_fov0.01_f00.010,167,completed
+inlist_M2_Z0.0140_exponential_fov0.03_f00.001,366,completed
+inlist_M2_Z0.0140_exponential_fov0.03_f00.005,132,completed
+inlist_M2_Z0.0140_exponential_fov0.03_f00.01,133,completed
