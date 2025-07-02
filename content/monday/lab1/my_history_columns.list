@@ -97,6 +97,21 @@
 
       !logt_max
 
+
+
+!# Color output
+
+      ! Note the filter names are case sensitive and must match what is used in your color
+      ! data file
+      star_age
+      Teff
+      log_Teff
+      log_L
+      log_R
+      log_g
+      !Custom Av values are handled in the run_star_extras
+
+
 !----------------------------------------------------------------------------------------------
 
 !# mixing and convection

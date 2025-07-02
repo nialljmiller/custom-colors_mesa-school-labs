@@ -23,6 +23,18 @@ else
     pgstar_setting="pgstar_flag = .false."
 fi
 
+# Ask user about pgstar settings
+read -p "Do you want to make csv of SED for batch runs? (yes/no): " enable_csv
+if [[ "$enable_pgstar" =~ ^[Yy][Ee]?[Ss]?$ ]]; then
+    csv_setting="make_csv = .true."
+else
+    csv_setting="make_csv = .false."
+fi
+
+    
+    
+
+
 # Helper function to check if pattern exists in file
 pattern_exists() {
     grep -q "$1" "$2"
@@ -115,6 +127,16 @@ tail -n +2 "$CSV_FILE" | while IFS=, read -r name mass metallicity scheme fov f0
     else
         add_parameter "$OUTFILE" "&star_job" "pgstar_flag" "${pgstar_setting#*=}" ""
     fi
+    
+
+    # For make_csv
+    if pattern_exists "make_csv" "$OUTFILE"; then
+        sed -i "s/make_csv\s*=\s*\.[a-z]\+\./$csv_setting/" "$OUTFILE"
+    else
+        add_parameter "$OUTFILE" "&star_job" "make_csv" "${csv_setting#*=}" ""
+    fi
+
+
     
     # Handle save_model_filename
     model_filename="M${mass}_Z${metallicity}"

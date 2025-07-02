@@ -8,7 +8,7 @@
     pre_ms_relax_num_steps = 100
 
   ! display on-screen plots
-    pgstar_flag = .true.
+    pgstar_flag = .false.
 
   ! wait for confirmation of the user before closing the pgstar plots
     pause_before_terminate = .true.
@@ -19,7 +19,7 @@
 
   ! save a model at the end of the run
     save_model_when_terminate = .true.
-    save_model_filename = 'M5_Z0014_fov030_f0ov0005_TAMS.mod'
+    save_model_filename = 'M15_Z0.0014_exponential_fov0.01_f00.005.mod'
 
   ! increasing the first time step after a convective core has formed from 0.00001 years to 1 year to speed up the computation
     set_initial_dt = .true.
@@ -40,16 +40,30 @@
   ! see kap/defaults/kap.defaults
 
     use_Type2_opacities = .true.
-    Zbase = 0.014d0
+    Zbase = 0.0014d0
 
 / ! end of kap namelist
 
+
+&colors
+      use_colors = .true.
+      instrument = '/colors/data/filters/GAIA/GAIA'
+      vega_sed = '/colors/data/stellar_models/vega_flam.csv'
+      stellar_atm = '/colors/data/stellar_models/Kurucz2003all/'
+      
+      metallicity = 0.02 !!
+      
+      distance = 3.0857d17 !! units?
+      make_csv = .true.
+
+/ ! end of colors namelist
 
 &controls
   ! see star/defaults/controls.defaults
 
   ! starting specifications
-    initial_mass = 5d0 ! in Msun units
+    initial_mass = 15d0 ! in Msun units
+    initial_z = 0.0014 ! initial metal mass fraction
 
   ! when to stop
 
@@ -77,11 +91,11 @@
     mixing_length_alpha = 1.8d0
 
   ! mixing
-    overshoot_scheme(1) = 'step'
-    overshoot_zone_type(1) = 'burn_H'
+    overshoot_scheme(1) = 'exponential'
+    overshoot_zone_type(1) = 'any'
     overshoot_zone_loc(1) = 'core'
     overshoot_bdy_loc(1) = 'top'
-    overshoot_f(1) = 0.30d0
+    overshoot_f(1) = 0.01d0
     overshoot_f0(1) = 0.005d0
 
   ! timesteps

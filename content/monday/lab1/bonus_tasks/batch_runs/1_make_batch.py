@@ -22,6 +22,12 @@ def create_batch_inlists(csv_file):
     # Ask user about pgstar settings
     enable_pgstar = input("Do you want to enable pgstar for batch runs? (yes/no): ").lower()
     pgstar_setting = "pgstar_flag = .true." if enable_pgstar.startswith('y') else "pgstar_flag = .false."
+    enable_csv = input("Do you want to make csv of SED for batch runs? (yes/no): ").lower()
+    csv_setting = "make_csv = .true." if enable_csv.startswith('y') else "make_csv = .false."    
+    
+
+
+
     
     # Read CSV file, skipping header
     with open(csv_file, 'r', newline='') as f:
@@ -108,6 +114,23 @@ def create_batch_inlists(csv_file):
                     # Otherwise add a new &star_job section at the beginning of the file
                     content = f'&star_job\n    {pgstar_setting}\n/ ! end of star_job namelist\n\n' + content
             
+
+
+            # For make_csv
+            if re.search(r'make_csv\s*=\s*\.', content):
+                content = re.sub(r'make_csv\s*=\s*\.(true|false)\.', csv_setting, content)
+            else:
+                # Add it to the &star_job section if it exists
+                if '&star_job' in content:
+                    content = re.sub(r'&star_job\n', f'&star_job\n    {csv_setting}\n', content)
+                else:
+                    # Otherwise add a new &star_job section at the beginning of the file
+                    content = f'&star_job\n    {csv_setting}\n/ ! end of star_job namelist\n\n' + content
+            
+
+
+
+
             # Handle save_model_filename
             model_filename = f"M{mass_int}_Z{metallicity}"
             if ovs_option != "none":
