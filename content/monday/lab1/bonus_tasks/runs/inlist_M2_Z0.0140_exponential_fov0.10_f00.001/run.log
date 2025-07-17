@@ -2988,3 +2988,419 @@ ________________________________________________________________________________
                         max_residual > tol_max_residual         220    9.7843933229141700D-01    1.0000000000000000D-04
             correction_norm > tol_correction_norm*coeff         220    4.7688714795166931D-04    3.0000000000000004D-07    1.0000000000000000D-02
           max_abs_correction > tol_max_correction*coeff         220    2.0131163566838944D-02    3.0000000000000001D-05    1.0000000000000000D-02
+                            solver rejected trial model
+                                        s% model_number         220
+                                  s% solver_call_number         401
+                                                     nz        1083
+                                         s% num_retries           4
+                                                     dt    1.5216441379957736D+11
+                                          log dt/secyer    3.6832091301750340D+00
+
+ retry: avg+max corr+resid -- give up in solver     220
+                      residual_norm > tol_residual_norm         220    2.4288847695349894D-04    9.9999999999999995D-07
+                        max_residual > tol_max_residual         220    4.4736545043319154D-01    1.0000000000000000D-04
+            correction_norm > tol_correction_norm*coeff         220    2.2281324233870613D-04    3.0000000000000004D-07    1.0000000000000000D-02
+          max_abs_correction > tol_max_correction*coeff         220    1.4220340974636810D-02    3.0000000000000001D-05    1.0000000000000000D-02
+                            solver rejected trial model
+                                        s% model_number         220
+                                  s% solver_call_number         402
+                                                     nz        1083
+                                         s% num_retries           5
+                                                     dt    7.6082206899788681D+10
+                                          log dt/secyer    3.3821791345110528D+00
+
+ retry: avg+max corr+resid -- give up in solver     220
+                      residual_norm > tol_residual_norm         220    1.6123343087304421D-04    9.9999999999999995D-07
+                        max_residual > tol_max_residual         220    2.4963287410209770D-01    1.0000000000000000D-04
+            correction_norm > tol_correction_norm*coeff         220    9.7231472885878545D-05    3.0000000000000004D-07    1.0000000000000000D-02
+          max_abs_correction > tol_max_correction*coeff         220    1.0322267595862585D-02    3.0000000000000001D-05    1.0000000000000000D-02
+                            solver rejected trial model
+                                        s% model_number         220
+                                  s% solver_call_number         403
+                                                     nz        1083
+                                         s% num_retries           6
+                                                     dt    3.8041103449894341D+10
+                                          log dt/secyer    3.0811491388470715D+00
+
+ retry: avg+max corr+resid -- give up in solver     220
+                      residual_norm > tol_residual_norm         220    1.2212354239130746D-04    9.9999999999999995D-07
+                        max_residual > tol_max_residual         220    1.1786549194378627D-01    1.0000000000000000D-04
+            correction_norm > tol_correction_norm*coeff         220    4.9588306579775984D-05    3.0000000000000004D-07    1.0000000000000000D-02
+          max_abs_correction > tol_max_correction*coeff         220    9.1317061482471488D-03    3.0000000000000001D-05    1.0000000000000000D-02
+                            solver rejected trial model
+                                        s% model_number         220
+                                  s% solver_call_number         404
+                                                     nz        1083
+                                         s% num_retries           7
+                                                     dt    1.9020551724947170D+10
+                                          log dt/secyer    2.7801191431830903D+00
+
+ retry: avg+max corr+resid -- give up in solver     220
+                      residual_norm > tol_residual_norm         220    1.0343231492710082D-04    9.9999999999999995D-07
+                        max_residual > tol_max_residual         220    5.6731584636899618D-02    1.0000000000000000D-04
+            correction_norm > tol_correction_norm*coeff         220    2.7376004520605451D-05    3.0000000000000004D-07    1.0000000000000000D-02
+          max_abs_correction > tol_max_correction*coeff         220    8.5735926914639465D-03    3.0000000000000001D-05    1.0000000000000000D-02
+                            solver rejected trial model
+                                        s% model_number         220
+                                  s% solver_call_number         405
+                                                     nz        1083
+                                         s% num_retries           8
+                                                     dt    9.5102758624735851D+09
+                                          log dt/secyer    2.4790891475191090D+00
+
+ retry: avg+max corr+resid -- give up in solver     220
+                      residual_norm > tol_residual_norm         220    9.3902309063091481D-05    9.9999999999999995D-07
+                        max_residual > tol_max_residual         220    4.0067153139608958D-02    1.0000000000000000D-04
+            correction_norm > tol_correction_norm*coeff         220    1.6309980283022364D-05    3.0000000000000004D-07    1.0000000000000000D-02
+          max_abs_correction > tol_max_correction*coeff         220    8.0623663411549685D-03    3.0000000000000001D-05    1.0000000000000000D-02
+                            solver rejected trial model
+                                        s% model_number         220
+                                  s% solver_call_number         406
+                                                     nz        1083
+                                         s% num_retries           9
+                                                     dt    4.7551379312367926D+09
+                                          log dt/secyer    2.1780591518551278D+00
+
+ retry: avg+max corr+resid -- give up in solver     220
+                      residual_norm > tol_residual_norm         220    8.6774888991527873D-05    9.9999999999999995D-07
+                        max_residual > tol_max_residual         220    2.5092014291572727D-02    1.0000000000000000D-04
+            correction_norm > tol_correction_norm*coeff         220    1.1110604459543217D-05    3.0000000000000004D-07    1.0000000000000000D-02
+          max_abs_correction > tol_max_correction*coeff         220    7.7079551046979368D-03    3.0000000000000001D-05    1.0000000000000000D-02
+                            solver rejected trial model
+                                        s% model_number         220
+                                  s% solver_call_number         407
+                                                     nz        1083
+                                         s% num_retries          10
+                                                     dt    2.3775689656183963D+09
+                                          log dt/secyer    1.8770291561911470D+00
+
+ retry: avg+max corr+resid -- give up in solver     220
+
+__________________________________________________________________________________________________________________________________________________
+
+       step    lg_Tmax     Teff     lg_LH      lg_Lnuc_tot     Mass       H_rich     H_cntr     N_cntr     Y_surf   eta_cntr   zones  retry
+  lg_dt_yrs    lg_Tcntr    lg_R     lg_L3a     lg_Lneu     lg_Mdot    He_core    He_cntr    O_cntr     Z_surf   gam_cntr   iters  
+    age_yrs    lg_Dcntr    lg_L     lg_LZ      lg_Lphoto   lg_Dsurf   CO_core    C_cntr     Ne_cntr    Z_cntr   v_div_cs       dt_limit
+__________________________________________________________________________________________________________________________________________________
+
+        220   7.646379   4980.378   1.980321   1.980321   1.997286   1.330974   0.000021   0.008852   0.268000  -2.896767   1083     11
+ 1.5760E+00   7.646379   1.211889 -19.710812   0.811739 -10.520098   0.666313   0.986386   0.000284   0.014000   0.085195     35
+ 1.6386E+09   2.414489   2.167521 -13.546350 -99.000000  -7.747688   0.000000   0.000143   0.001460   0.013593  0.000E+00         retry
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        221   7.646402   4980.302   1.978025   1.978025   1.997286   1.330974   0.000020   0.008852   0.268000  -2.896692   1091     11
+ 1.5760E+00   7.646402   1.211907 -19.709632   0.809433 -10.520267   0.666313   0.986387   0.000284   0.014000   0.085195      5
+ 1.6386E+09   2.414556   2.167531 -99.000000 -99.000000  -7.747691   0.000000   0.000143   0.001460   0.013593  0.000E+00          hold
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        222   7.646425   4980.286   1.975345   1.975345   1.997286   1.330974   0.000020   0.008852   0.268000  -2.896562   1091     11
+ 1.6552E+00   7.646425   1.211928 -19.708417   0.806741 -10.520239   0.666313   0.986387   0.000284   0.014000   0.085197      5
+ 1.6386E+09   2.414646   2.167567 -13.847380 -99.000000  -7.747711   0.000000   0.000143   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        223   7.646453   4980.267   1.972210   1.972210   1.997286   1.330974   0.000020   0.008852   0.268000  -2.896400   1091     11
+ 1.7344E+00   7.646453   1.211952 -19.706946   0.803592 -10.520173   0.666313   0.986387   0.000284   0.014000   0.085199      5
+ 1.6386E+09   2.414757   2.167608 -99.000000 -99.000000  -7.747734   0.000000   0.000143   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        224   7.646486   4980.246   1.968538   1.968538   1.997286   1.330974   0.000020   0.008852   0.268000  -2.896198   1091     11
+ 1.8135E+00   7.646486   1.211979 -19.705165   0.799903 -10.520097   0.666313   0.986387   0.000284   0.014000   0.085201      5
+ 1.6386E+09   2.414893   2.167655 -99.000000 -99.000000  -7.747759   0.000000   0.000143   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        225   7.646527   4980.221   1.964251   1.964251   1.997286   1.330974   0.000020   0.008852   0.268000  -2.895947   1091     11
+ 1.8927E+00   7.646527   1.212010 -19.703004   0.795596 -10.520011   0.666313   0.986387   0.000284   0.014000   0.085204      5
+ 1.6386E+09   2.415062   2.167709 -99.000000 -99.000000  -7.747789   0.000000   0.000143   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        226   7.646575   4980.192   1.959294   1.959294   1.997286   1.330974   0.000019   0.008852   0.268000  -2.895631   1091     11
+ 1.9719E+00   7.646575   1.212046 -19.700377   0.790616 -10.519912   0.666313   0.986388   0.000284   0.014000   0.085208      5
+ 1.6386E+09   2.415271   2.167770 -13.847380 -99.000000  -7.747822   0.000000   0.000143   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        227   7.646635   4980.158   1.953807   1.953807   1.997286   1.330974   0.000019   0.008852   0.268000  -2.895234   1091     11
+ 2.0511E+00   7.646635   1.212088 -19.697178   0.785102 -10.519799   0.666313   0.986388   0.000284   0.014000   0.085214      5
+ 1.6386E+09   2.415530   2.167841 -13.148410 -99.000000  -7.747861   0.000000   0.000143   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        228   7.646707   4980.119   1.945903   1.945903   1.997286   1.330974   0.000019   0.008852   0.268000  -2.894728   1091     11
+ 2.1303E+00   7.646707   1.212135 -19.693263   0.777160 -10.519668   0.666313   0.986388   0.000284   0.014000   0.085221      5
+ 1.6386E+09   2.415856   2.167922 -13.847380 -99.000000  -7.747905   0.000000   0.000143   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        229   7.646796   4980.074   1.937036   1.937036   1.997286   1.330974   0.000018   0.008852   0.268000  -2.894081   1091     11
+ 2.2094E+00   7.646796   1.212189 -19.688461   0.768249 -10.519519   0.666313   0.986389   0.000284   0.014000   0.085230      5
+ 1.6386E+09   2.416266   2.168015 -99.000000 -99.000000  -7.747956   0.000000   0.000144   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+
+__________________________________________________________________________________________________________________________________________________
+
+       step    lg_Tmax     Teff     lg_LH      lg_Lnuc_tot     Mass       H_rich     H_cntr     N_cntr     Y_surf   eta_cntr   zones  retry
+  lg_dt_yrs    lg_Tcntr    lg_R     lg_L3a     lg_Lneu     lg_Mdot    He_core    He_cntr    O_cntr     Z_surf   gam_cntr   iters  
+    age_yrs    lg_Dcntr    lg_L     lg_LZ      lg_Lphoto   lg_Dsurf   CO_core    C_cntr     Ne_cntr    Z_cntr   v_div_cs       dt_limit
+__________________________________________________________________________________________________________________________________________________
+
+        230   7.646905   4980.021   1.927459   1.927459   1.997286   1.330974   0.000018   0.008852   0.268000  -2.893256   1091     11
+ 2.2886E+00   7.646905   1.212251 -19.682564   0.758622 -10.519349   0.666313   0.986389   0.000284   0.014000   0.085243      5
+ 1.6386E+09   2.416782   2.168121 -13.370259 -99.000000  -7.748014   0.000000   0.000144   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        231   7.647038   4979.960   1.913574   1.913574   1.997286   1.330974   0.000017   0.008852   0.268000  -2.892180   1091     11
+ 2.3678E+00   7.647038   1.212323 -19.675261   0.744664 -10.519153   0.666313   0.986390   0.000284   0.014000   0.085260      5
+ 1.6386E+09   2.417443   2.168244 -99.000000 -99.000000  -7.748081   0.000000   0.000144   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        232   7.647204   4979.888   1.897997   1.897997   1.997286   1.330974   0.000016   0.008852   0.268000  -2.890784   1091     11
+ 2.4470E+00   7.647204   1.212407 -19.666185   0.729000 -10.518927   0.666313   0.986391   0.000284   0.014000   0.085283      5
+ 1.6386E+09   2.418289   2.168386 -99.000000 -99.000000  -7.748158   0.000000   0.000144   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        233   7.647408   4979.803   1.882609   1.882609   1.997286   1.330974   0.000016   0.008852   0.268000  -2.888989   1091     11
+ 2.5262E+00   7.647408   1.212506 -19.654929   0.713522 -10.518665   0.666313   0.986392   0.000284   0.014000   0.085313      5
+ 1.6386E+09   2.419364   2.168553 -99.000000 -99.000000  -7.748249   0.000000   0.000144   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        234   7.647662   4979.701   1.862152   1.862152   1.997286   1.330974   0.000015   0.008852   0.268000  -2.886648   1091     11
+ 2.6054E+00   7.647662   1.212622 -19.640875   0.692938 -10.518357   0.666313   0.986392   0.000284   0.014000   0.085354      5
+ 1.6386E+09   2.420746   2.168751 -13.546350 -99.000000  -7.748357   0.000000   0.000144   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        235   7.647980   4979.579   1.833303   1.833303   1.997286   1.330974   0.000014   0.008852   0.268000  -2.883534   1091     11
+ 2.6845E+00   7.647980   1.212761 -19.623179   0.663899 -10.517992   0.666313   0.986394   0.000284   0.014000   0.085411      5
+ 1.6386E+09   2.422555   2.168986 -99.000000 -99.000000  -7.748485   0.000000   0.000144   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        236   7.648379   4979.431   1.796830   1.796830   1.997286   1.330974   0.000012   0.008852   0.268000  -2.879357   1091     11
+ 2.7637E+00   7.648379   1.212927 -19.600810   0.627162 -10.517559   0.666313   0.986395   0.000284   0.014000   0.085489      5
+ 1.6386E+09   2.424938   2.169267 -13.671289 -99.000000  -7.748638   0.000000   0.000144   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        237   7.648879   4979.251   1.755458   1.755458   1.997286   1.330974   0.000011   0.008851   0.268000  -2.873799   1091     11
+ 2.8429E+00   7.648879   1.213128 -19.572565   0.585451 -10.517039   0.666313   0.986397   0.000284   0.014000   0.085596      5
+ 1.6386E+09   2.428065   2.169605 -99.000000 -99.000000  -7.748822   0.000000   0.000144   0.001460   0.013593  0.000E+00  max increase
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        238   7.649506   4979.031   1.702463   1.702463   1.997286   1.330974   0.000009   0.008851   0.268000  -2.866344   1089     11
+ 2.9221E+00   7.649506   1.213369 -19.536877   0.531957 -10.516415   0.666313   0.986398   0.000284   0.014000   0.085744      5
+ 1.6386E+09   2.432190   2.170012 -99.000000 -99.000000  -7.749043   0.000000   0.000144   0.001460   0.013593  0.000E+00    lg_XH_cntr
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        239   7.650059   4978.837   1.650435   1.650435   1.997286   1.330974   0.000008   0.008851   0.268000  -2.859281   1088     11
+ 2.8573E+00   7.650059   1.213579 -19.505086   0.479363 -10.515664   0.666313   0.986399   0.000284   0.014000   0.085888      5
+ 1.6386E+09   2.436037   2.170363 -99.000000 -99.000000  -7.749234   0.000000   0.000144   0.001460   0.013593  0.000E+00    lg_XH_cntr
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+
+__________________________________________________________________________________________________________________________________________________
+
+       step    lg_Tmax     Teff     lg_LH      lg_Lnuc_tot     Mass       H_rich     H_cntr     N_cntr     Y_surf   eta_cntr   zones  retry
+  lg_dt_yrs    lg_Tcntr    lg_R     lg_L3a     lg_Lneu     lg_Mdot    He_core    He_cntr    O_cntr     Z_surf   gam_cntr   iters  
+    age_yrs    lg_Dcntr    lg_L     lg_LZ      lg_Lphoto   lg_Dsurf   CO_core    C_cntr     Ne_cntr    Z_cntr   v_div_cs       dt_limit
+__________________________________________________________________________________________________________________________________________________
+
+        240   7.650552   4978.662   1.598294   1.598294   1.997286   1.330974   0.000007   0.008851   0.268000  -2.852510   1106     11
+ 2.8021E+00   7.650552   1.213764 -19.476477   0.426570 -10.515014   0.666313   0.986401   0.000284   0.014000   0.086030      5
+ 1.6386E+09   2.439668   2.170673 -14.148410 -99.000000  -7.749402   0.000000   0.000145   0.001460   0.013593  0.000E+00    lg_XH_cntr
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        241   7.650984   4978.506   1.547148   1.547148   1.997286   1.330973   0.000006   0.008851   0.268000  -2.846115   1102     11
+ 2.7454E+00   7.650984   1.213928 -19.451130   0.374691 -10.514440   0.666313   0.986402   0.000284   0.014000   0.086168      5
+ 1.6386E+09   2.443045   2.170945 -13.847380 -99.000000  -7.749550   0.000000   0.000145   0.001460   0.013593  0.000E+00    lg_XH_cntr
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        242   7.651359   4978.367   1.501358   1.501358   1.997286   1.330973   0.000005   0.008851   0.268000  -2.840163   1102     11
+ 2.6884E+00   7.651359   1.214072 -19.428877   0.328149 -10.513936   0.666313   0.986402   0.000284   0.014000   0.086299      5
+ 1.6386E+09   2.446148   2.171184 -99.000000 -99.000000  -7.749680   0.000000   0.000145   0.001460   0.013593  0.000E+00    lg_XH_cntr
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        243   7.651688   4978.240   1.451614   1.451614   1.997286   1.330973   0.000004   0.008851   0.268000  -2.834482   1097     11
+ 2.6412E+00   7.651688   1.214201 -19.409037   0.277485 -10.513492   0.666313   0.986403   0.000284   0.014000   0.086427      5
+ 1.6386E+09   2.449065   2.171399 -14.148410 -99.000000  -7.749797   0.000000   0.000145   0.001460   0.013593  0.000E+00    lg_XH_cntr
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        244   7.651970   4978.126   1.408054   1.408054   1.997286   1.330973   0.000004   0.008850   0.268000  -2.829196   1097     11
+ 2.5884E+00   7.651970   1.214316 -19.391772   0.233008 -10.513094   0.666313   0.986404   0.000284   0.014000   0.086549      5
+ 1.6386E+09   2.451743   2.171589 -99.000000 -99.000000  -7.749900   0.000000   0.000145   0.001460   0.013593  0.000E+00    lg_XH_cntr
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        245   7.652210   4978.024   1.364194   1.364194   1.997286   1.330973   0.000003   0.008850   0.268000  -2.824286   1096     11
+ 2.5349E+00   7.652210   1.214418 -19.376859   0.188114 -10.512742   0.666313   0.986404   0.000284   0.014000   0.086664      5
+ 1.6386E+09   2.454195   2.171757 -13.847380 -99.000000  -7.749991   0.000000   0.000145   0.001460   0.013593  0.000E+00    lg_XH_cntr
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        246   7.652411   4977.932   1.322657   1.322657   1.997286   1.330973   0.000003   0.008850   0.268000  -2.819710   1096     11
+ 2.4844E+00   7.652411   1.214508 -19.364014   0.145482 -10.512430   0.666313   0.986405   0.000284   0.014000   0.086774      5
+ 1.6386E+09   2.456448   2.171906 -99.000000 -99.000000  -7.750072   0.000000   0.000145   0.001460   0.013593  0.000E+00    lg_XH_cntr
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        247   7.652574   4977.872   1.285441   1.285441   1.997286   1.330973   0.000002   0.008850   0.268000  -2.815567   1096     11
+ 2.4232E+00   7.652574   1.214586 -19.353270   0.107174 -10.512152   0.666313   0.986405   0.000284   0.014000   0.086875      5
+ 1.6386E+09   2.458458   2.172041 -99.000000 -99.000000  -7.750146   0.000000   0.000145   0.001460   0.013593  0.000E+00    lg_XH_cntr
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        248   7.652707   4977.748   1.252498   1.252498   1.997286   1.330973   0.000002   0.008850   0.268000  -2.811814   1092     11
+ 2.3640E+00   7.652707   1.214657 -19.344264   0.073167 -10.511905   0.666313   0.986406   0.000284   0.014000   0.086969      5
+ 1.6386E+09   2.460256   2.172139 -13.972319 -99.000000  -7.750197   0.000000   0.000145   0.001460   0.013593  0.000E+00    lg_XH_cntr
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+        249   7.652815   4977.685   1.222976   1.222976   1.997286   1.330973   0.000002   0.008850   0.268000  -2.808395   1088     11
+ 2.3080E+00   7.652815   1.214718 -19.336647   0.042606 -10.511713   0.666313   0.986406   0.000284   0.014000   0.087055      5
+ 1.6386E+09   2.461875   2.172240 -99.000000 -99.000000  -7.750252   0.000000   0.000145   0.001460   0.013593  0.000E+00    lg_XH_cntr
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+
+__________________________________________________________________________________________________________________________________________________
+
+       step    lg_Tmax     Teff     lg_LH      lg_Lnuc_tot     Mass       H_rich     H_cntr     N_cntr     Y_surf   eta_cntr   zones  retry
+  lg_dt_yrs    lg_Tcntr    lg_R     lg_L3a     lg_Lneu     lg_Mdot    He_core    He_cntr    O_cntr     Z_surf   gam_cntr   iters  
+    age_yrs    lg_Dcntr    lg_L     lg_LZ      lg_Lphoto   lg_Dsurf   CO_core    C_cntr     Ne_cntr    Z_cntr   v_div_cs       dt_limit
+__________________________________________________________________________________________________________________________________________________
+
+        250   7.652897   4977.629   1.197586   1.197586   1.997286   1.330973   0.000001   0.008850   0.268000  -2.805308   1086     11
+ 2.2490E+00   7.652897   1.214772 -19.330424   0.016250 -10.511525   0.666313   0.986406   0.000284   0.014000   0.087135      5
+ 1.6386E+09   2.463314   2.172328 -99.000000 -99.000000  -7.750299   0.000000   0.000145   0.001460   0.013593  0.000E+00    lg_XH_cntr
+
+save LOGS/profile6.data for model 250
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+save photos/x250 for model 250
+        251   7.652958   4977.581   1.176302   1.176302   1.997286   1.330973   0.000001   0.008850   0.268000  -2.802553   1086     11
+ 2.1856E+00   7.652958   1.214818 -19.325393  -0.005901 -10.511362   0.666313   0.986406   0.000284   0.014000   0.087207      5
+ 1.6386E+09   2.464578   2.172403 -99.000000 -99.000000  -7.750340   0.000000   0.000145   0.001460   0.013593  0.000E+00    lg_XH_cntr
+
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+
+stop because have dropped below central lower limit for h1
+    0.9590239256E-06    0.1000000000E-05
+
+        252   7.653009   4977.539   1.158933   1.158933   1.997286   1.330973   0.000001   0.008850   0.268000  -2.800110   1083     11
+ 2.1199E+00   7.653009   1.214858 -19.321012  -0.024020 -10.511221   0.666313   0.986407   0.000284   0.014000   0.087272      5
+ 1.6386E+09   2.465693   2.172468 -13.972319 -99.000000  -7.750375   0.000000   0.000146   0.001460   0.013593  0.000E+00    lg_XH_cntr
+
+save LOGS/profile7.data for model 252
+ Loading precomputed flux cube from:/home/njm/MESA/mesa/colors/data/stellar_models/Kurucz2003all//flux_cube.bin
+ Loaded flux cube with dimensions:          76 x          11 x           9 x        1173
+ Performing interpolation at target parameters...
+ Interpolation complete
+                                         solver retries          12
+
+                                    varcontrol dt limit          65
+                                  max increase dt limit         236
+                                        solver dt limit           1
+                                        lgTeff dt limit          15
+                                    lgRho_cntr dt limit          27
+                                    lg_XH_cntr dt limit          38
+                                      XHe_cntr dt limit          44
+
+ model saved to M2_Z0.0140_exponential_fov0.10_f00.001.mod
+save photos/x252 for model 252
+termination code: xa_central_lower_limit
+pause_before_terminate: hit RETURN to continue
+finished custom colors
+__________________________________________________________________________________________________________________________________________________
+
+       step    lg_Tmax     Teff     lg_LH      lg_Lnuc_tot     Mass       H_rich     H_cntr     N_cntr     Y_surf   eta_cntr   zones  retry
+  lg_dt_yrs    lg_Tcntr    lg_R     lg_L3a     lg_Lneu     lg_Mdot    He_core    He_cntr    O_cntr     Z_surf   gam_cntr   iters  
+    age_yrs    lg_Dcntr    lg_L     lg_LZ      lg_Lphoto   lg_Dsurf   CO_core    C_cntr     Ne_cntr    Z_cntr   v_div_cs       dt_limit
+__________________________________________________________________________________________________________________________________________________
+
+        252   7.653009   4977.539   1.158933   1.158933   1.997286   1.330973   0.000001   0.008850   0.268000  -2.800110   1083     11
+ 2.1199E+00   7.653009   1.214858 -19.321012  -0.024020 -10.511221   0.666313   0.986407   0.000284   0.014000   0.087272      5
+ 1.6386E+09   2.465693   2.172468 -13.972319 -99.000000  -7.750375   0.000000   0.000146   0.001460   0.013593  0.000E+00  max increase
+

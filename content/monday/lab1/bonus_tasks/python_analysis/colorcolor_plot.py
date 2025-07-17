@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-color_color_plots.py - Multi-System Color-Color Diagrams for MESA Custom Colors
-Creates comprehensive color-color diagrams showcasing different photometric systems
+colorcolor_plot.py - Consolidated Color-Color Diagram Generator for MESA
+Creates color-color diagrams with physics parameter color coding and 3D analysis
 """
 
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import mesa_reader as mr
-import matplotlib.gridspec as gridspec
 import glob
-from matplotlib.patches import Rectangle
-from matplotlib.collections import LineCollection
+from matplotlib.colors import Normalize
+import matplotlib.cm as cm
 
 def read_header_columns(history_file):
     """Read column headers from history file to find available filters."""
@@ -23,481 +23,430 @@ def read_header_columns(history_file):
                 break
     
     if header_line is None:
+        print("Warning: Could not find header line with 'model_number'")
         return [], []
     
     all_cols = header_line.split()
     
+    # Find filter columns after Flux_bol
     try:
         flux_index = all_cols.index("Flux_bol")
         filter_columns = all_cols[flux_index + 1:]
     except ValueError:
+        print("Warning: Could not find 'Flux_bol' column in header")
         filter_columns = []
     
     return all_cols, filter_columns
 
-def setup_all_photometric_systems(filter_columns):
-    """Set up all available photometric systems for comprehensive analysis."""
-    systems = {}
+def setup_colorcolor_params(md, filter_columns):
+    """Set up color-color parameters based on available filters with priority system."""
     
-    # GAIA system
-    gaia_filters = ['Gbp', 'G', 'Grp']
-    if all(f in filter_columns for f in gaia_filters):
-        systems['GAIA'] = {
-            'filters': gaia_filters,
-            'color_combinations': [
-                ('Gbp-Grp', 'Gbp-G'),  # Standard GAIA color-color
-                ('Gbp-G', 'G-Grp'),    # Alternative GAIA colors
-            ],
-            'description': 'European Space Agency Gaia mission'
-        }
-    
-    # Johnson-Cousins system
-    johnson_filters = [f for f in ['U', 'B', 'V', 'R', 'I'] if f in filter_columns]
-    if len(johnson_filters) >= 3:
-        systems['Johnson'] = {
-            'filters': johnson_filters,
-            'color_combinations': [],
-            'description': 'Johnson-Cousins photometric system'
-        }
+    # Priority 1: GAIA colors (Gbp-Grp vs Grp-Grvs)
+    if all(f in filter_columns and hasattr(md, f) for f in ['Gbp', 'Grp', 'Grvs']):
+        color1 = md.Gbp - md.Grp
+        color2 = md.Grp - md.Grvs
+        color1_label = "Gbp - Grp"
+        color2_label = "Grp - Grvs"
+        system = "GAIA"
+        print("Using GAIA color-color: (Gbp-Grp) vs (Grp-Grvs)")
         
-        # Add all possible color combinations
-        if 'U' in johnson_filters and 'B' in johnson_filters and 'V' in johnson_filters:
-            systems['Johnson']['color_combinations'].append(('U-B', 'B-V'))
-        if 'B' in johnson_filters and 'V' in johnson_filters and 'R' in johnson_filters:
-            systems['Johnson']['color_combinations'].append(('B-V', 'V-R'))
-        if 'V' in johnson_filters and 'R' in johnson_filters and 'I' in johnson_filters:
-            systems['Johnson']['color_combinations'].append(('V-R', 'R-I'))
-        if 'B' in johnson_filters and 'V' in johnson_filters and 'I' in johnson_filters:
-            systems['Johnson']['color_combinations'].append(('B-V', 'V-I'))
-    
-    # 2MASS system  
-    twomass_filters = [f for f in ['J', 'H', 'K'] if f in filter_columns]
-    if len(twomass_filters) >= 3:
-        systems['2MASS'] = {
-            'filters': twomass_filters,
-            'color_combinations': [
-                ('J-H', 'H-K'),  # Standard 2MASS color-color
-                ('J-K', 'H-K'),  # Alternative combination
-            ],
-            'description': 'Two Micron All Sky Survey'
-        }
-    
-    # SDSS system
-    sdss_filters = [f for f in ['u', 'g', 'r', 'i', 'z'] if f in filter_columns]
-    if len(sdss_filters) >= 3:
-        systems['SDSS'] = {
-            'filters': sdss_filters,
-            'color_combinations': [],
-            'description': 'Sloan Digital Sky Survey'
-        }
+    # Priority 2: Johnson-Cousins (B-V vs V-I)
+    elif all(f in filter_columns and hasattr(md, f) for f in ['B', 'V', 'I']):
+        color1 = md.B - md.V
+        color2 = md.V - md.I
+        color1_label = "B - V"
+        color2_label = "V - I"
+        system = "Johnson"
+        print("Using Johnson color-color: (B-V) vs (V-I)")
         
-        # Add SDSS color combinations
-        if 'u' in sdss_filters and 'g' in sdss_filters and 'r' in sdss_filters:
-            systems['SDSS']['color_combinations'].append(('u-g', 'g-r'))
-        if 'g' in sdss_filters and 'r' in sdss_filters and 'i' in sdss_filters:
-            systems['SDSS']['color_combinations'].append(('g-r', 'r-i'))
-        if 'r' in sdss_filters and 'i' in sdss_filters and 'z' in sdss_filters:
-            systems['SDSS']['color_combinations'].append(('r-i', 'i-z'))
-    
-    return systems
-
-def get_color_data(md, color_name):
-    """Extract color data from MESA data object."""
-    if '-' not in color_name:
-        return None
-    
-    f1, f2 = color_name.split('-')
-    
-    try:
-        mag1 = getattr(md, f1)
-        mag2 = getattr(md, f2)
-    except AttributeError:
+    # Priority 3: SDSS (g-r vs r-i)
+    elif all(f in filter_columns and hasattr(md, f) for f in ['g', 'r', 'i']):
+        color1 = getattr(md, 'g') - getattr(md, 'r')
+        color2 = getattr(md, 'r') - getattr(md, 'i')
+        color1_label = "g - r"
+        color2_label = "r - i"
+        system = "SDSS"
+        print("Using SDSS color-color: (g-r) vs (r-i)")
+        
+    # Priority 4: 2MASS (J-H vs H-K)
+    elif all(f in filter_columns and hasattr(md, f) for f in ['J', 'H', 'K']):
+        color1 = md.J - md.H
+        color2 = md.H - md.K
+        color1_label = "J - H"
+        color2_label = "H - K"
+        system = "2MASS"
+        print("Using 2MASS color-color: (J-H) vs (H-K)")
+        
+    # Fallback: Use available filters to construct colors
+    elif len(filter_columns) >= 3:
+        f1, f2, f3 = filter_columns[0], filter_columns[1], filter_columns[2]
         try:
-            mag1 = md.data(f1)
-            mag2 = md.data(f2)
-        except:
-            return None
+            col1 = getattr(md, f1)
+            col2 = getattr(md, f2)
+            col3 = getattr(md, f3)
+        except AttributeError:
+            col1 = md.data(f1)
+            col2 = md.data(f2)
+            col3 = md.data(f3)
+            
+        color1 = col1 - col2
+        color2 = col2 - col3
+        color1_label = f"{f1} - {f2}"
+        color2_label = f"{f2} - {f3}"
+        system = "Custom"
+        print(f"Using custom color-color: ({color1_label}) vs ({color2_label})")
+        
+    else:
+        print("Error: Need at least 3 filters for color-color diagram")
+        return None, None, None, None, None
     
-    return mag1 - mag2
+    return color1, color2, color1_label, color2_label, system
 
-def plot_single_color_color(logs_path="LOGS"):
-    """Create color-color plots for a single MESA model."""
+def get_physics_param(md, param_name):
+    """Get physics parameter for color coding - focused on most informative recorded columns."""
+    physics_params = {
+        # Most informative recorded parameters
+        'center_h1': 'center_h1',           # Hydrogen depletion - evolutionary phase
+        'he_core_mass': 'he_core_mass',     # Core evolution
+        'log_LH': 'log_LH',                 # Hydrogen burning power
+        'mass_conv_core': 'mass_conv_core', # Convective core size
+        'center_he4': 'center_he4',         # Helium abundance evolution
+        
+        # Basic stellar properties
+        'mass': 'star_mass',
+        'age': 'star_age',
+        'teff': 'log_Teff',
+        'luminosity': 'log_L',
+        'radius': 'log_R'
+    }
     
-    if not os.path.isdir(logs_path):
-        print(f"Error: Could not find {logs_path} directory")
-        return
+    if param_name not in physics_params:
+        return None, f"Unknown parameter: {param_name}"
+    
+    param_col = physics_params[param_name]
+    if hasattr(md, param_col):
+        return getattr(md, param_col), param_col
+    else:
+        return None, f"{param_col} not found"
+
+def plot_single_colorcolor(logs_path="LOGS", physics_param='center_h1'):
+    """Create color-color plots for a single MESA run with physics parameter color coding."""
     
     history_path = os.path.join(logs_path, "history.data")
     if not os.path.exists(history_path):
-        print(f"Error: Could not find history.data in {logs_path}")
-        return
-    
-    print(f"Loading MESA data from {history_path}")
-    md = mr.MesaData(history_path)
-    
-    # Get filter information
-    all_cols, filter_columns = read_header_columns(history_path)
-    print(f"Available photometric filters: {filter_columns}")
-    
-    # Set up all photometric systems
-    systems = setup_all_photometric_systems(filter_columns)
-    
-    if not systems:
-        print("No suitable photometric systems found!")
-        return
-    
-    print(f"Available systems: {list(systems.keys())}")
-    
-    # Create figure with subplots for each system
-    n_systems = len(systems)
-    fig = plt.figure(figsize=(15, 5 * n_systems))
-    
-    plot_idx = 1
-    
-    for system_name, system_data in systems.items():
-        print(f"Creating color-color plots for {system_name}...")
+        print(f"Error: Could not find history file at {history_path}")
+        return False
         
-        n_combinations = len(system_data['color_combinations'])
-        if n_combinations == 0:
-            continue
+    try:
+        data = mr.MesaData(history_path)
+        all_cols, filter_columns = read_header_columns(history_path)
+        color1, color2, color1_label, color2_label, system = setup_colorcolor_params(data, filter_columns)
         
-        # Create subplot grid for this system
-        for i, (color1, color2) in enumerate(system_data['color_combinations']):
-            ax = plt.subplot(n_systems, max(2, n_combinations), plot_idx)
-            plot_idx += 1
+        if color1 is None:
+            print("Error: Could not set up color-color parameters")
+            return False
             
-            # Get color data
-            color1_data = get_color_data(md, color1)
-            color2_data = get_color_data(md, color2)
+        # Get physics parameter for color coding
+        physics_data, physics_label = get_physics_param(data, physics_param)
+        if physics_data is None:
+            print(f"Warning: {physics_label}. Using model number instead.")
+            physics_data = data.model_number
+            physics_label = 'model_number'
             
-            if color1_data is None or color2_data is None:
-                print(f"Warning: Could not compute colors {color1} or {color2}")
-                continue
+        # Create plots directory
+        os.makedirs("plots", exist_ok=True)
+        
+        # 2D Color-Color with physics parameter color coding
+        plt.figure(figsize=(10, 10))
+        scatter = plt.scatter(color1, color2, c=physics_data, 
+                            cmap='viridis', s=20, alpha=0.7)
+        
+        # Mark start and end points
+        plt.scatter(color1[0], color2[0], color='red', marker='o', 
+                   s=100, label='Start', edgecolors='black')
+        plt.scatter(color1[-1], color2[-1], color='blue', marker='s', 
+                   s=100, label='End', edgecolors='black')
+        
+        plt.xlabel(color1_label, fontsize=14)
+        plt.ylabel(color2_label, fontsize=14)
+        
+        plt.grid(alpha=0.3)
+        plt.legend()
+        plt.title(f'{system} Color-Color Diagram colored by {physics_label}', fontsize=16)
+        
+        # Add colorbar
+        cbar = plt.colorbar(scatter)
+        cbar.set_label(physics_label, fontsize=12)
+        
+        plt.tight_layout()
+        plt.savefig(f"plots/colorcolor_{system.lower()}_{physics_param}.png", dpi=300, bbox_inches='tight')
+        print(f"Saved 2D color-color to plots/colorcolor_{system.lower()}_{physics_param}.png")
+        plt.show()
+        
+        # 3D Color-Color with age as z-axis
+        if hasattr(data, 'star_age'):
+            fig = plt.figure(figsize=(14, 10))
+            ax = fig.add_subplot(111, projection='3d')
             
-            # Create evolutionary track with time coloring
-            if hasattr(md, 'center_h1'):
-                # Color by hydrogen abundance (evolutionary phase)
-                scatter = ax.scatter(color1_data, color2_data, c=md.center_h1, 
-                                   cmap='plasma_r', s=30, alpha=0.8, edgecolor='none')
-                
-                # Add colorbar
-                cbar = plt.colorbar(scatter, ax=ax)
-                cbar.set_label('Central H1 Fraction')
-                
-                # Mark evolutionary phases
-                if np.max(md.center_h1) - np.min(md.center_h1) > 0.6:
-                    # ZAMS (high H1)
-                    zams_h1 = 0.7
-                    zams_idx = np.abs(md.center_h1 - zams_h1).argmin()
-                    ax.scatter(color1_data[zams_idx], color2_data[zams_idx], 
-                             marker='*', s=300, edgecolor='black', facecolor='navy',
-                             label='ZAMS', zorder=10)
-                    
-                    # TAMS (low H1) 
-                    tams_h1 = 1e-6
-                    tams_idx = np.abs(md.center_h1 - tams_h1).argmin()
-                    ax.scatter(color1_data[tams_idx], color2_data[tams_idx], 
-                             marker='s', s=200, edgecolor='black', facecolor='gold',
-                             label='TAMS', zorder=10)
-                    
-                    ax.legend()
-            else:
-                # Simple line plot if no evolutionary data
-                ax.plot(color1_data, color2_data, '-', color='blue', linewidth=2, alpha=0.8)
-                ax.scatter(color1_data[0], color2_data[0], color='green', s=100, 
-                          marker='o', label='Start', zorder=5)
-                ax.scatter(color1_data[-1], color2_data[-1], color='red', s=100, 
-                          marker='s', label='End', zorder=5)
-                ax.legend()
+            age_myr = data.star_age / 1e6  # Convert to Myr
             
-            ax.set_xlabel(color1)
-            ax.set_ylabel(color2)
-            ax.set_title(f"{system_name}: {color1} vs {color2}")
-            ax.grid(alpha=0.3)
-    
-    plt.suptitle("Multi-System Color-Color Diagrams - Custom Colors Showcase", fontsize=16)
-    plt.tight_layout()
-    
-    # Save the plot
-    os.makedirs("plots", exist_ok=True)
-    plt.savefig("plots/color_color_diagrams_single.png", dpi=300, bbox_inches='tight')
-    print("Saved: plots/color_color_diagrams_single.png")
-    
-    plt.show()
+            scatter_3d = ax.scatter(color1, color2, age_myr, 
+                                  c=physics_data, cmap='viridis', s=20, alpha=0.7)
+            
+            # Mark evolution points
+            ax.scatter(color1[0], color2[0], age_myr[0], 
+                      color='green', marker='o', s=100, label='Start')
+            ax.scatter(color1[-1], color2[-1], age_myr[-1], 
+                      color='red', marker='s', s=100, label='End')
+            
+            ax.set_xlabel(color1_label, fontsize=12)
+            ax.set_ylabel(color2_label, fontsize=12)
+            ax.set_zlabel('Age (Myr)', fontsize=12)
+            ax.legend()
+            
+            plt.title(f"3D {system} Color-Color Evolution", fontsize=16)
+            
+            # Add colorbar
+            cbar = plt.colorbar(scatter_3d, ax=ax, shrink=0.5, aspect=30)
+            cbar.set_label(physics_label, fontsize=12)
+            
+            plt.savefig(f"plots/colorcolor_3d_{system.lower()}_{physics_param}.png", dpi=300, bbox_inches='tight')
+            print(f"Saved 3D color-color to plots/colorcolor_3d_{system.lower()}_{physics_param}.png")
+            plt.show()
+            
+        return True
+        
+    except Exception as e:
+        print(f"Error creating color-color plots: {e}")
+        return False
 
-def plot_batch_color_color(runs_dir="../runs"):
-    """Create comparative color-color plots for batch MESA runs."""
+def plot_batch_colorcolor(runs_dir="../runs", physics_param='mass'):
+    """Create batch color-color plots with physics parameter color coding."""
     
     if not os.path.isdir(runs_dir):
-        print(f"Error: Could not find runs directory: {runs_dir}")
-        return
-    
+        print(f"Error: Could not find {runs_dir} directory")
+        return False
+        
     # Find all run directories
     run_dirs = [d for d in os.listdir(runs_dir) 
-                if d.startswith('inlist_M') and os.path.isdir(os.path.join(runs_dir, d))]
+                if os.path.isdir(os.path.join(runs_dir, d)) and d.startswith("inlist_")]
     
     if not run_dirs:
         print("No batch run directories found")
-        return
-    
-    print(f"Found {len(run_dirs)} model runs")
-    
+        return False
+        
     # Parse run parameters and collect data
     all_data = []
-    mass_colors = {}
-    scheme_linestyles = {}
+    physics_values = []
     
     for run_dir in run_dirs:
         history_path = os.path.join(runs_dir, run_dir, "LOGS", "history.data")
         
         if not os.path.exists(history_path):
+            print(f"Warning: No history file in {run_dir}")
             continue
-        
+            
         try:
-            # Parse parameters
+            # Parse parameters from directory name
             parts = run_dir.replace('inlist_M', '').split('_')
             mass = float(parts[0])
+            metallicity = float(parts[1][1:])  # Remove 'Z'
             
             if 'noovs' in run_dir:
                 scheme = 'none'
+                fov = 0.0
             else:
-                scheme = parts[2] if len(parts) > 2 else 'unknown'
-            
+                scheme = parts[2]
+                fov = float(parts[3][3:])  # Remove 'fov'
+                
             # Load data
-            md = mr.MesaData(history_path)
-            
-            # Get filter information
+            data = mr.MesaData(history_path)
             all_cols, filter_columns = read_header_columns(history_path)
+            color1, color2, color1_label, color2_label, system = setup_colorcolor_params(data, filter_columns)
             
-            if not filter_columns:
+            if color1 is None:
                 continue
+            
+            # Get physics parameter value
+            if physics_param == 'mass':
+                phys_value = mass
+            elif physics_param == 'metallicity':
+                phys_value = metallicity  
+            elif physics_param == 'fov':
+                phys_value = fov
+            elif physics_param == 'center_h1':
+                # Use initial hydrogen abundance for comparison
+                phys_data, _ = get_physics_param(data, physics_param)
+                phys_value = phys_data[0] if phys_data is not None else 0
+            else:
+                # Use final value for most other parameters
+                phys_data, _ = get_physics_param(data, physics_param)
+                phys_value = phys_data[-1] if phys_data is not None else 0
             
             # Store data
             run_info = {
-                'data': md,
+                'data': data,
+                'color1': color1,
+                'color2': color2,
+                'color1_label': color1_label,
+                'color2_label': color2_label,
+                'system': system,
                 'mass': mass,
+                'metallicity': metallicity,
                 'scheme': scheme,
-                'filter_columns': filter_columns,
-                'run_dir': run_dir
+                'fov': fov,
+                'run_dir': run_dir,
+                'physics_value': phys_value
             }
             all_data.append(run_info)
+            physics_values.append(phys_value)
             
-            # Assign colors by mass
-            if mass not in mass_colors:
-                mass_colors[mass] = plt.cm.viridis(len(mass_colors) / 10.0)
-            
-            # Assign line styles by scheme
-            if scheme not in scheme_linestyles:
-                styles = ['-', '--', '-.', ':']
-                scheme_linestyles[scheme] = styles[len(scheme_linestyles) % len(styles)]
-                
         except Exception as e:
             print(f"Error processing {run_dir}: {e}")
             continue
     
     if not all_data:
-        print("No valid data found!")
-        return
-    
-    print(f"Successfully loaded {len(all_data)} models")
-    
-    # Find common photometric systems
-    all_filter_sets = [set(run['filter_columns']) for run in all_data]
-    common_filters = list(set.intersection(*all_filter_sets))
-    
-    print(f"Common filters across all models: {common_filters}")
-    
-    # Set up systems based on common filters
-    systems = setup_all_photometric_systems(common_filters)
-    
-    if not systems:
-        print("No common photometric systems found!")
-        return
-    
-    # Create comparison plots for each system
-    for system_name, system_data in systems.items():
-        create_batch_color_color_system(all_data, system_name, system_data, 
-                                       mass_colors, scheme_linestyles)
-
-def create_batch_color_color_system(all_data, system_name, system_data, 
-                                   mass_colors, scheme_linestyles):
-    """Create batch color-color plots for a specific photometric system."""
-    
-    color_combinations = system_data['color_combinations']
-    n_combinations = len(color_combinations)
-    
-    if n_combinations == 0:
-        return
-    
-    fig, axes = plt.subplots(1, n_combinations, figsize=(7*n_combinations, 6))
-    if n_combinations == 1:
-        axes = [axes]
-    
-    for i, (color1, color2) in enumerate(color_combinations):
-        ax = axes[i]
+        print("No valid data found in batch runs")
+        return False
         
-        # Plot each model
-        for run in all_data:
-            md = run['data']
-            
-            color1_data = get_color_data(md, color1)
-            color2_data = get_color_data(md, color2)
-            
-            if color1_data is None or color2_data is None:
-                continue
-            
-            color = mass_colors[run['mass']]
-            linestyle = scheme_linestyles[run['scheme']]
-            
-            # Plot evolutionary track
-            ax.plot(color1_data, color2_data, color=color, linestyle=linestyle,
-                   linewidth=2, alpha=0.8)
-            
-            # Mark start and end points
-            ax.scatter(color1_data[0], color2_data[0], color=color, 
-                      marker='o', s=60, alpha=0.9, edgecolor='black', linewidth=0.5)
-            ax.scatter(color1_data[-1], color2_data[-1], color=color, 
-                      marker='s', s=60, alpha=0.9, edgecolor='black', linewidth=0.5)
+    # Determine the photometric system to use
+    systems = [d['system'] for d in all_data]
+    primary_system = max(set(systems), key=systems.count)
+    primary_data = [d for d in all_data if d['system'] == primary_system]
+    
+    print(f"Creating batch color-color plots using {primary_system} system")
+    print(f"Found {len(primary_data)} models with {primary_system} photometry")
+    
+    # Normalize physics values for color mapping
+    norm = Normalize(vmin=min(physics_values), vmax=max(physics_values))
+    cmap = cm.viridis
+    
+    # Create batch color-color plot
+    plt.figure(figsize=(12, 12))
+    
+    for run_info in primary_data:
+        color = cmap(norm(run_info['physics_value']))
         
-        ax.set_xlabel(color1)
-        ax.set_ylabel(color2)
-        ax.set_title(f"{system_name}: {color1} vs {color2}")
-        ax.grid(alpha=0.3)
-    
-    # Create custom legend
-    legend_elements = []
-    
-    # Mass legend
-    for mass in sorted(mass_colors.keys()):
-        legend_elements.append(plt.Line2D([0], [0], color=mass_colors[mass], 
-                                        linewidth=3, label=f'M = {mass:.1f} M☉'))
-    
-    # Scheme legend
-    for scheme in sorted(scheme_linestyles.keys()):
-        legend_elements.append(plt.Line2D([0], [0], color='gray', 
-                                        linestyle=scheme_linestyles[scheme],
-                                        linewidth=2, label=f'{scheme} overshooting'))
-    
-    # Add markers legend
-    legend_elements.extend([
-        plt.Line2D([0], [0], marker='o', color='gray', linewidth=0, 
-                  markersize=8, label='ZAMS'),
-        plt.Line2D([0], [0], marker='s', color='gray', linewidth=0, 
-                  markersize=8, label='TAMS')
-    ])
-    
-    # Place legend
-    if n_combinations > 1:
-        axes[-1].legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left')
-    else:
-        axes[0].legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left')
-    
-    plt.suptitle(f"{system_name} Color-Color Diagrams - Parameter Study\n"
-                f"{system_data['description']}", fontsize=14)
-    plt.tight_layout()
-    
-    # Save the plot
-    os.makedirs("plots", exist_ok=True)
-    filename = f"plots/batch_color_color_{system_name.lower()}.png"
-    plt.savefig(filename, dpi=300, bbox_inches='tight')
-    print(f"Saved: {filename}")
-    
-    plt.show()
-
-def create_multi_system_comparison(logs_path="LOGS"):
-    """Create a comprehensive comparison showing all systems side by side."""
-    
-    if not os.path.isdir(logs_path):
-        print(f"Error: Could not find {logs_path} directory")
-        return
-    
-    history_path = os.path.join(logs_path, "history.data")
-    if not os.path.exists(history_path):
-        print(f"Error: Could not find history.data in {logs_path}")
-        return
-    
-    md = mr.MesaData(history_path)
-    all_cols, filter_columns = read_header_columns(history_path)
-    systems = setup_all_photometric_systems(filter_columns)
-    
-    if len(systems) < 2:
-        print("Need at least 2 photometric systems for comparison")
-        return
-    
-    # Create a grid showing one color-color diagram per system
-    n_systems = len(systems)
-    fig, axes = plt.subplots(1, n_systems, figsize=(5*n_systems, 5))
-    if n_systems == 1:
-        axes = [axes]
-    
-    for i, (system_name, system_data) in enumerate(systems.items()):
-        ax = axes[i]
-        
-        if not system_data['color_combinations']:
-            continue
-        
-        # Use the first color combination for each system
-        color1, color2 = system_data['color_combinations'][0]
-        
-        color1_data = get_color_data(md, color1)
-        color2_data = get_color_data(md, color2)
-        
-        if color1_data is None or color2_data is None:
-            continue
-        
-        # Plot with evolutionary phases
-        if hasattr(md, 'center_h1'):
-            scatter = ax.scatter(color1_data, color2_data, c=md.center_h1, 
-                               cmap='plasma_r', s=40, alpha=0.8)
-            
-            # Add arrows to show direction
-            n_points = len(color1_data)
-            step = max(1, n_points // 20)  # Show ~20 arrows
-            
-            for j in range(0, n_points-step, step):
-                ax.annotate('', xy=(color1_data[j+step], color2_data[j+step]),
-                           xytext=(color1_data[j], color2_data[j]),
-                           arrowprops=dict(arrowstyle='->', color='black', 
-                                         alpha=0.5, lw=1))
+        # Different line styles for different schemes
+        if run_info['scheme'] == 'none':
+            linestyle = '-'
+        elif run_info['scheme'] == 'exponential':
+            linestyle = '--'
+        elif run_info['scheme'] == 'step':
+            linestyle = '-.'
         else:
-            ax.plot(color1_data, color2_data, '-', linewidth=2)
+            linestyle = ':'
+            
+        label = f"M={run_info['mass']}M☉"
+        if run_info['scheme'] != 'none':
+            label += f", {run_info['scheme']}"
+        if run_info['fov'] > 0:
+            label += f" (f_ov={run_info['fov']})"
+            
+        plt.plot(run_info['color1'], run_info['color2'], 
+                color=color, linestyle=linestyle, linewidth=2, 
+                label=label, alpha=0.8)
         
-        ax.set_xlabel(color1)
-        ax.set_ylabel(color2)
-        ax.set_title(f"{system_name}\n{system_data['description']}")
-        ax.grid(alpha=0.3)
+        # Mark start and end points
+        plt.scatter(run_info['color1'][0], run_info['color2'][0], 
+                   color=color, marker='o', s=30, alpha=0.7)
+        plt.scatter(run_info['color1'][-1], run_info['color2'][-1], 
+                   color=color, marker='s', s=30, alpha=0.7)
     
-    plt.suptitle("Multi-System Color-Color Comparison", fontsize=16)
+    plt.xlabel(f"{primary_data[0]['color1_label']}", fontsize=14)
+    plt.ylabel(f"{primary_data[0]['color2_label']}", fontsize=14)
+        
+    plt.grid(alpha=0.3)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.title(f"Batch {primary_system} Color-Color Diagrams colored by {physics_param}", fontsize=16)
+    
+    # Add colorbar for physics parameter
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    cbar = plt.colorbar(sm, ax=plt.gca())
+    cbar.set_label(physics_param, fontsize=12)
+    
+    os.makedirs("plots", exist_ok=True)
     plt.tight_layout()
-    
-    # Save the plot
-    plt.savefig("plots/multi_system_color_color.png", dpi=300, bbox_inches='tight')
-    print("Saved: plots/multi_system_color_color.png")
-    
+    plt.savefig(f"plots/batch_colorcolor_{primary_system.lower()}_{physics_param}.png", dpi=300, bbox_inches='tight')
+    print(f"Saved batch color-color to plots/batch_colorcolor_{primary_system.lower()}_{physics_param}.png")
     plt.show()
+    
+    # Create 3D batch plot with Teff as z-axis
+    if all(hasattr(d['data'], 'log_Teff') for d in primary_data):
+        fig = plt.figure(figsize=(16, 12))
+        ax = fig.add_subplot(111, projection='3d')
+        
+        for run_info in primary_data:
+            color = cmap(norm(run_info['physics_value']))
+            
+            if run_info['scheme'] == 'none':
+                linestyle = '-'
+            elif run_info['scheme'] == 'exponential':
+                linestyle = '--'
+            else:
+                linestyle = '-.'
+            
+            # Use log_Teff evolution as z-coordinate
+            teff_data = run_info['data'].log_Teff
+            
+            ax.plot(run_info['color1'], run_info['color2'], teff_data,
+                   color=color, linestyle=linestyle, linewidth=2, alpha=0.8)
+            
+            # Mark endpoints
+            ax.scatter(run_info['color1'][0], run_info['color2'][0], teff_data[0],
+                      color=color, marker='o', s=50)
+            ax.scatter(run_info['color1'][-1], run_info['color2'][-1], teff_data[-1],
+                      color=color, marker='s', s=50)
+        
+        ax.set_xlabel(f"{primary_data[0]['color1_label']}", fontsize=12)
+        ax.set_ylabel(f"{primary_data[0]['color2_label']}", fontsize=12)
+        ax.set_zlabel('log Teff', fontsize=12)
+        
+        plt.title(f"3D Batch {primary_system} Color-Color Evolution (Teff tracks)", fontsize=16)
+        
+        # Add colorbar
+        cbar = plt.colorbar(sm, ax=ax, shrink=0.5, aspect=30)
+        cbar.set_label(physics_param, fontsize=12)
+        
+        plt.savefig(f"plots/batch_colorcolor_3d_{primary_system.lower()}_{physics_param}.png", dpi=300, bbox_inches='tight')
+        print(f"Saved 3D batch color-color to plots/batch_colorcolor_3d_{primary_system.lower()}_{physics_param}.png")
+        plt.show()
+    
+    return True
 
-if __name__ == "__main__":
-    print("MESA Custom Colors - Color-Color Diagram Analysis")
-    print("=================================================")
+def main():
+    """Main function to determine whether to plot single or batch color-color analysis."""
     
-    # Check for single model first
-    if os.path.exists("LOGS/history.data"):
-        print("Creating single model color-color plots...")
-        plot_single_color_color()
-        create_multi_system_comparison()
-    
-    # Check for custom log directories
-    log_dirs = glob.glob("LOGS_M*")
-    if log_dirs:
-        log_dir = log_dirs[0]
-        print(f"Found custom log directory: {log_dir}")
-        plot_single_color_color(log_dir)
-        create_multi_system_comparison(log_dir)
+    # Check for single run
+    single_run_found = False
+    for logs_path in ["../../LOGS", "../LOGS", "LOGS"]:
+        if os.path.isdir(logs_path):
+            print(f"Found LOGS directory at {logs_path}. Creating color-color plots for single run.")
+            
+            # Create only the most informative color-color plot
+            print(f"\nCreating color-color plot colored by center_h1 (evolutionary phase)...")
+            plot_single_colorcolor(logs_path, 'center_h1')
+            
+            single_run_found = True
+            break
     
     # Check for batch runs
-    if os.path.exists("../runs"):
-        print("Creating batch color-color plots...")
-        plot_batch_color_color("../runs")
-    elif os.path.exists("runs"):
-        print("Creating batch color-color plots...")
-        plot_batch_color_color("runs")
+    batch_run_found = False
+    for runs_path in ["../runs", "runs"]:
+        if os.path.isdir(runs_path):
+            print(f"\nFound batch runs directory at {runs_path}. Creating batch color-color analysis.")
+            
+            # Create only the most informative batch color-color plot
+            print(f"\nCreating batch color-color plot colored by mass...")
+            plot_batch_colorcolor(runs_path, 'mass')
+            
+            batch_run_found = True
+            break
+    
+    if not single_run_found and not batch_run_found:
+        print("Error: Could not find LOGS directory or batch runs directory.")
+        print("Make sure you're running this script from the right location.")
+
+if __name__ == "__main__":
+    main()
