@@ -260,9 +260,9 @@ class SEDChecker:
 def main():
     checker = SEDChecker(
         directory="../LOGS/SED/",
-        xlim=[2500, 20000],
+        xlim=[600, 10000],
         ylim=None,
-        refresh_interval=5,
+        refresh_interval=1,
         save_video=False,
         video_filename="sed_animation.mp4",
         video_fps=10,
