@@ -278,3 +278,10 @@ inlist_M5_Z0.0014_noovs,87,completed
 inlist_M5_Z0.0014_exponential_fov0.01_f00.001,81,completed
 inlist_M5_Z0.0014_exponential_fov0.01_f00.005,81,completed
 inlist_M5_Z0.0014_exponential_fov0.01_f00.010,84,completed
+inlist_M5_Z0.0014_exponential_fov0.03_f00.001,115,completed
+inlist_M5_Z0.0014_exponential_fov0.03_f00.005,93,completed
+inlist_M5_Z0.0014_exponential_fov0.03_f00.01,91,completed
+inlist_M5_Z0.0014_exponential_fov0.10_f00.001,102,completed
+inlist_M5_Z0.0014_exponential_fov0.10_f00.005,127,completed
+inlist_M5_Z0.0014_exponential_fov0.10_f00.01,121,completed
+inlist_M5_Z0.0014_step_fov0.02_f00.001,90,completed

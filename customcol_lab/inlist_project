@@ -16,7 +16,7 @@
 
   ! save a model at the end of the run
     save_model_when_terminate = .true.
-    save_model_filename = 'M5_Z0.0014_exponential_fov0.03_f00.001.mod'
+    save_model_filename = 'M5_Z0.0014_step_fov0.02_f00.005.mod'
 
   ! increasing the first time step after a convective core has formed from 0.00001 years to 1 year to speed up the computation
     set_initial_dt = .true.
@@ -117,12 +117,12 @@
 
   ! mixing
      use_Ledoux_criterion = .true.
-         overshoot_scheme(1) = 'exponential'
+         overshoot_scheme(1) = 'step'
          overshoot_zone_type(1) = 'any'
          overshoot_zone_loc(1) = 'core'
          overshoot_bdy_loc(1) = 'top'
-         overshoot_f(1) = 0.03d0
-         overshoot_f0(1) = 0.001d0
+         overshoot_f(1) = 0.02d0
+         overshoot_f0(1) = 0.005d0
 
   ! timesteps
 
