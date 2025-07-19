@@ -299,3 +299,13 @@ inlist_M10_Z0.0140_exponential_fov0.03_f00.005,97,completed
 inlist_M10_Z0.0140_exponential_fov0.03_f00.01,96,completed
 inlist_M10_Z0.0140_exponential_fov0.10_f00.001,95,completed
 inlist_M10_Z0.0140_exponential_fov0.10_f00.005,95,completed
+inlist_M10_Z0.0140_exponential_fov0.10_f00.01,105,completed
+inlist_M10_Z0.0140_step_fov0.10_f00.001,90,completed
+inlist_M10_Z0.0140_step_fov0.10_f00.005,86,completed
+inlist_M10_Z0.0140_step_fov0.10_f00.01,87,completed
+inlist_M10_Z0.0140_step_fov0.30_f00.001,88,completed
+inlist_M10_Z0.0140_step_fov0.30_f00.005,88,completed
+inlist_M10_Z0.0140_step_fov0.30_f00.01,88,completed
+inlist_M10_Z0.0014_noovs,89,completed
+inlist_M10_Z0.0014_exponential_fov0.01_f00.001,85,completed
+inlist_M10_Z0.0014_exponential_fov0.01_f00.005,85,completed
