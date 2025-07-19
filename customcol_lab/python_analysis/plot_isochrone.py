@@ -126,7 +126,7 @@ def interpolate_stellar_data(age_array, data_arrays, target_age):
             interpolated.append(value)
         return interpolated
 
-def load_batch_data(runs_dir="../runs"):
+def load_batch_data(runs_dir="../batch_runs/runs"):
     """Load all batch run data and organize by stellar parameters."""
     
     if not os.path.isdir(runs_dir):
@@ -600,7 +600,7 @@ def main():
     
     # Check for batch runs
     batch_run_found = False
-    for runs_path in ["../runs", "runs"]:
+    for runs_path in ["../batch_runs/runs", "runs"]:
         if os.path.isdir(runs_path):
             print(f"Found batch runs directory at {runs_path}.")
             print("Creating interactive isochrone CMD plots...")

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-cmd_plot.py - Consolidated Color-Magnitude Diagram Generator for MESA
+cmd_plot_combined.py - Comprehensive Color-Magnitude Diagram Generator for MESA
 Combines single model, batch analysis, physics parameter color coding, and 3D plotting
+Includes both 2D and 3D CMD functionality with age axis and physics parameter coloring
 """
 
 import os
@@ -12,6 +13,7 @@ import mesa_reader as mr
 import glob
 from matplotlib.colors import Normalize
 import matplotlib.cm as cm
+
 
 def read_header_columns(history_file):
     """Read column headers from history file to find available filters."""
@@ -99,8 +101,8 @@ def setup_cmd_params(md, filter_columns):
         print("Warning: No photometric filters found, falling back to HR diagram")
         color_index = md.log_Teff
         magnitude = md.log_L
-        color_label = "log Teff"
-        mag_label = "log L/L☉"
+        color_label = r"$\log(T_{\mathrm{eff}}/\mathrm{K})$"
+        mag_label = r"$\log(L/L_{\odot})$"
         system = "HR"
     
     return color_index, magnitude, color_label, mag_label, system
@@ -132,7 +134,7 @@ def get_physics_param(md, param_name):
     else:
         return None, f"{param_col} not found"
 
-def plot_single_cmd(logs_path="LOGS", physics_param='age'):
+def plot_single_cmd(logs_path="LOGS", physics_param='age', create_3d=True):
     """Create CMD plots for a single MESA run with physics parameter color coding."""
     
     history_path = os.path.join(logs_path, "history.data")
@@ -190,18 +192,27 @@ def plot_single_cmd(logs_path="LOGS", physics_param='age'):
         print(f"Saved 2D CMD to plots/cmd_{system.lower()}_{physics_param}.png")
         plt.show()
         
-        # 3D CMD with physics parameter as z-axis
-        if hasattr(data, 'star_age') and system != "HR":
+        # 3D CMD with age as z-axis and physics parameter as color
+        if create_3d and hasattr(data, 'star_age'):
             fig = plt.figure(figsize=(14, 10))
             ax = fig.add_subplot(111, projection='3d')
             
-            # Use age for z-axis and physics param for color
             age_myr = data.star_age / 1e6  # Convert to Myr
             
-            scatter_3d = ax.scatter(color_index, magnitude, age_myr, 
-                                  c=physics_data, cmap='viridis', s=20, alpha=0.7)
+            # For 3D age plot, use age as z-axis and physics param for color
+            if physics_param == 'age':
+                # If physics param is age, just use a single color
+                ax.plot(color_index, magnitude, age_myr, 
+                        color='blue', linewidth=2, alpha=0.8)
+            else:
+                # Use physics parameter for color coding
+                scatter_3d = ax.scatter(color_index, magnitude, age_myr, 
+                                      c=physics_data, cmap='viridis', s=20, alpha=0.7)
+                # Add colorbar
+                cbar = plt.colorbar(scatter_3d, ax=ax, shrink=0.5, aspect=30)
+                cbar.set_label(physics_label, fontsize=12)
             
-            # Mark evolution points
+            # Mark start and end points
             ax.scatter(color_index[0], magnitude[0], age_myr[0], 
                       color='green', marker='o', s=100, label='Start')
             ax.scatter(color_index[-1], magnitude[-1], age_myr[-1], 
@@ -211,16 +222,16 @@ def plot_single_cmd(logs_path="LOGS", physics_param='age'):
             ax.set_ylabel(mag_label, fontsize=12)
             ax.set_zlabel('Age (Myr)', fontsize=12)
             ax.invert_yaxis()
+            
+            if system == "HR":
+                ax.invert_xaxis()
+                
             ax.legend()
+            ax.set_title(f"3D {system} CMD Evolution", fontsize=16)
+            ax.view_init(elev=30, azim=-60)
             
-            plt.title(f"3D {system} CMD Evolution", fontsize=16)
-            
-            # Add colorbar
-            cbar = plt.colorbar(scatter_3d, ax=ax, shrink=0.5, aspect=30)
-            cbar.set_label(physics_label, fontsize=12)
-            
-            plt.savefig(f"plots/cmd_3d_{system.lower()}_{physics_param}.png", dpi=300, bbox_inches='tight')
-            print(f"Saved 3D CMD to plots/cmd_3d_{system.lower()}_{physics_param}.png")
+            plt.savefig(f"plots/cmd_3d_{system.lower()}_age.png", dpi=300, bbox_inches='tight')
+            print(f"Saved 3D CMD to plots/cmd_3d_{system.lower()}_age.png")
             plt.show()
             
         return True
@@ -229,7 +240,7 @@ def plot_single_cmd(logs_path="LOGS", physics_param='age'):
         print(f"Error creating CMD plots: {e}")
         return False
 
-def plot_batch_cmd(runs_dir="../runs", physics_param='mass'):
+def plot_batch_cmd(runs_dir="../batch_runs/runs", physics_param='mass', create_3d=True):
     """Create batch CMD plots with physics parameter color coding."""
     
     if not os.path.isdir(runs_dir):
@@ -244,9 +255,9 @@ def plot_batch_cmd(runs_dir="../runs", physics_param='mass'):
         print("No batch run directories found")
         return False
         
-    # Parse run parameters and collect data
-    all_data = []
-    physics_values = []
+    # Collect data from all runs
+    runs_data = {}
+    run_params = {}
     
     for run_dir in run_dirs:
         history_path = os.path.join(runs_dir, run_dir, "LOGS", "history.data")
@@ -270,166 +281,194 @@ def plot_batch_cmd(runs_dir="../runs", physics_param='mass'):
                 
             # Load data
             data = mr.MesaData(history_path)
-            all_cols, filter_columns = read_header_columns(history_path)
-            color_index, magnitude, color_label, mag_label, system = setup_cmd_params(data, filter_columns)
             
-            if color_index is None:
-                continue
-            
-            # Get physics parameter value (use appropriate value for batch comparison)
-            if physics_param == 'mass':
-                phys_value = mass
-            elif physics_param == 'metallicity':
-                phys_value = metallicity  
-            elif physics_param == 'fov':
-                phys_value = fov
-            elif physics_param == 'center_h1':
-                # Use initial hydrogen abundance for comparison
-                phys_data, _ = get_physics_param(data, physics_param)
-                phys_value = phys_data[0] if phys_data is not None else 0
-            else:
-                # Use final value for most other parameters
-                phys_data, _ = get_physics_param(data, physics_param)
-                phys_value = phys_data[-1] if phys_data is not None else 0
-            
-            # Store data
-            run_info = {
-                'data': data,
+            runs_data[run_dir] = data
+            run_params[run_dir] = {
                 'mass': mass,
                 'metallicity': metallicity,
                 'scheme': scheme,
-                'fov': fov,
-                'color_index': color_index,
-                'magnitude': magnitude,
-                'color_label': color_label,
-                'mag_label': mag_label,
-                'system': system,
-                'run_dir': run_dir,
-                'physics_value': phys_value
+                'fov': fov
             }
-            all_data.append(run_info)
-            physics_values.append(phys_value)
             
         except Exception as e:
             print(f"Error processing {run_dir}: {e}")
             continue
     
-    if not all_data:
+    if not runs_data:
         print("No valid data found in batch runs")
         return False
         
-    # Determine the photometric system to use
-    systems = [d['system'] for d in all_data]
-    primary_system = max(set(systems), key=systems.count)
-    primary_data = [d for d in all_data if d['system'] == primary_system]
+    # Determine CMD parameters from first valid run
+    first_run = list(runs_data.keys())[0]
+    first_data = runs_data[first_run]
+    all_cols, filter_columns = read_header_columns(
+        os.path.join(runs_dir, first_run, "LOGS", "history.data"))
+    color_index, magnitude, color_label, mag_label, system = setup_cmd_params(first_data, filter_columns)
     
-    print(f"Creating batch CMD plots using {primary_system} system")
-    print(f"Found {len(primary_data)} models with {primary_system} photometry")
+    if color_index is None:
+        print("Error: Could not set up CMD parameters")
+        return False
+        
+    print(f"Creating batch CMD plots using {system} system")
+    print(f"Found {len(runs_data)} models")
     
-    # Normalize physics values for color mapping
-    physics_values = [d['physics_value'] for d in primary_data]
-    norm = Normalize(vmin=min(physics_values), vmax=max(physics_values))
-    cmap = cm.viridis
+    # Set up colors and styles
+    masses = sorted(set(param["mass"] for param in run_params.values()))
+    mass_colors = plt.cm.brg(np.linspace(0, 1, len(masses)))
+    mass_color_map = {mass: mass_colors[i] for i, mass in enumerate(masses)}
     
-    # Create batch CMD plot
+    # Create 2D batch plot
     plt.figure(figsize=(14, 10))
     
-    for run_info in primary_data:
-        color = cmap(norm(run_info['physics_value']))
+    for run, data in runs_data.items():
+        params = run_params[run]
         
-        # Different line styles for different schemes
-        if run_info['scheme'] == 'none':
-            linestyle = '-'
-        elif run_info['scheme'] == 'exponential':
+        # Get CMD parameters for this run
+        all_cols, filter_columns = read_header_columns(
+            os.path.join(runs_dir, run, "LOGS", "history.data"))
+        run_color_index, run_magnitude, _, _, run_system = setup_cmd_params(data, filter_columns)
+        
+        # Only plot if same system as primary
+        if run_system != system:
+            continue
+            
+        base_color = mass_color_map[params["mass"]]
+        
+        # Alpha based on fov
+        fov_alpha = 0.3 + 0.7 * params["fov"] if params["scheme"] != "none" else 1.0
+        
+        # Line style based on scheme
+        if params["scheme"] == "none":
             linestyle = '--'
-        elif run_info['scheme'] == 'step':
-            linestyle = '-.'
+        elif params["scheme"] == "exponential":
+            linestyle = '-'
         else:
             linestyle = ':'
-            
-        label = f"M={run_info['mass']}M☉"
-        if run_info['scheme'] != 'none':
-            label += f", {run_info['scheme']}"
-        if run_info['fov'] > 0:
-            label += f" (f_ov={run_info['fov']})"
-            
-        plt.plot(run_info['color_index'], run_info['magnitude'], 
-                color=color, linestyle=linestyle, linewidth=2, 
-                label=label, alpha=0.8)
+        
+        label = f"M={params['mass']}M☉"
+        if params["scheme"] != "none":
+            label += f", {params['scheme']}"
+        if params["fov"] > 0:
+            label += f" (f_ov={params['fov']})"
+        
+        plt.plot(run_color_index, run_magnitude, 
+                color=base_color, linestyle=linestyle, linewidth=2, 
+                label=label, alpha=fov_alpha)
         
         # Mark start and end points
-        plt.scatter(run_info['color_index'][0], run_info['magnitude'][0], 
-                   color=color, marker='o', s=30, alpha=0.7)
-        plt.scatter(run_info['color_index'][-1], run_info['magnitude'][-1], 
-                   color=color, marker='s', s=30, alpha=0.7)
+        plt.scatter(run_color_index[0], run_magnitude[0], 
+                   color=base_color, marker='o', s=30, alpha=fov_alpha)
+        plt.scatter(run_color_index[-1], run_magnitude[-1], 
+                   color=base_color, marker='s', s=30, alpha=fov_alpha)
     
-    plt.xlabel(f"{primary_data[0]['color_label']}", fontsize=14)
-    plt.ylabel(f"{primary_data[0]['mag_label']}", fontsize=14)
+    plt.xlabel(color_label, fontsize=14)
+    plt.ylabel(mag_label, fontsize=14)
     plt.gca().invert_yaxis()
     
-    if primary_system == "HR":
+    if system == "HR":
         plt.gca().invert_xaxis()
         
     plt.grid(alpha=0.3)
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    plt.title(f"Batch {primary_system} CMD colored by {physics_param}", fontsize=16)
     
-    # Add colorbar for physics parameter
-    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-    sm.set_array([])
-    cbar = plt.colorbar(sm, ax=plt.gca())
-    cbar.set_label(physics_param, fontsize=12)
+    # Create simplified legend
+    # Mass legend
+    for mass in masses:
+        plt.plot([], [], '-', color=mass_color_map[mass], linewidth=3, label=f"{mass}M☉")
+    
+    # Scheme legend
+    scheme_styles = {'none': '--', 'exponential': '-', 'step': ':'}
+    for scheme, style in scheme_styles.items():
+        if any(params['scheme'] == scheme for params in run_params.values()):
+            plt.plot([], [], linestyle=style, color='gray', label=f"{scheme} scheme")
+    
+    if len(runs_data) <= 10:
+        plt.legend(fontsize=9, loc='best')
+    
+    plt.title(f"Batch {system} CMD", fontsize=16)
     
     os.makedirs("plots", exist_ok=True)
     plt.tight_layout()
-    plt.savefig(f"plots/batch_cmd_{primary_system.lower()}_{physics_param}.png", dpi=300, bbox_inches='tight')
-    print(f"Saved batch CMD to plots/batch_cmd_{primary_system.lower()}_{physics_param}.png")
+    plt.savefig(f"plots/batch_cmd_{system.lower()}.png", dpi=300, bbox_inches='tight')
+    print(f"Saved batch CMD to plots/batch_cmd_{system.lower()}.png")
     plt.show()
     
-    # Create 3D batch plot if age data available
-    if all(hasattr(d['data'], 'star_age') for d in primary_data) and primary_system != "HR":
-        fig = plt.figure(figsize=(16, 12))
+    # Create 3D batch plot with age as z-axis
+    if create_3d and all(hasattr(data, 'star_age') for data in runs_data.values()):
+        fig = plt.figure(figsize=(18, 14))
         ax = fig.add_subplot(111, projection='3d')
         
-        for run_info in primary_data:
-            color = cmap(norm(run_info['physics_value']))
-            age_myr = run_info['data'].star_age / 1e6
+        for run, data in runs_data.items():
+            params = run_params[run]
             
-            if run_info['scheme'] == 'none':
-                linestyle = '-'
-            elif run_info['scheme'] == 'exponential':
+            # Get CMD parameters for this run
+            all_cols, filter_columns = read_header_columns(
+                os.path.join(runs_dir, run, "LOGS", "history.data"))
+            run_color_index, run_magnitude, _, _, run_system = setup_cmd_params(data, filter_columns)
+            
+            # Only plot if same system as primary
+            if run_system != system:
+                continue
+                
+            base_color = mass_color_map[params["mass"]]
+            age_myr = data.star_age / 1e6
+            
+            # Alpha based on fov
+            fov_alpha = 0.3 + 0.7 * params["fov"] if params["scheme"] != "none" else 1.0
+            
+            # Line style based on scheme
+            if params["scheme"] == "none":
                 linestyle = '--'
+            elif params["scheme"] == "exponential":
+                linestyle = '-'
             else:
-                linestyle = '-.'
+                linestyle = ':'
             
-            ax.plot(run_info['color_index'], run_info['magnitude'], age_myr,
-                   color=color, linestyle=linestyle, linewidth=2, alpha=0.8)
+            ax.plot(run_color_index, run_magnitude, age_myr,
+                    color=base_color,
+                    linestyle=linestyle,
+                    linewidth=2,
+                    alpha=fov_alpha)
             
-            # Mark endpoints
-            ax.scatter(run_info['color_index'][0], run_info['magnitude'][0], age_myr[0],
-                      color=color, marker='o', s=50)
-            ax.scatter(run_info['color_index'][-1], run_info['magnitude'][-1], age_myr[-1],
-                      color=color, marker='s', s=50)
+            # Mark start and end points
+            ax.scatter(run_color_index[0], run_magnitude[0], age_myr[0],
+                      color=base_color, marker='o', s=50, alpha=fov_alpha)
+            ax.scatter(run_color_index[-1], run_magnitude[-1], age_myr[-1],
+                      color=base_color, marker='s', s=50, alpha=fov_alpha)
         
-        ax.set_xlabel(f"{primary_data[0]['color_label']}", fontsize=12)
-        ax.set_ylabel(f"{primary_data[0]['mag_label']}", fontsize=12)
-        ax.set_zlabel('Age (Myr)', fontsize=12)
+        ax.set_xlabel(color_label, fontsize=14)
+        ax.set_ylabel(mag_label, fontsize=14)
+        ax.set_zlabel("Age (Myr)", fontsize=14)
         ax.invert_yaxis()
         
-        plt.title(f"3D Batch {primary_system} CMD Evolution", fontsize=16)
+        if system == "HR":
+            ax.invert_xaxis()
+            
+        ax.set_title(f"3D {system} CMD Evolution for All Stellar Models", fontsize=16)
+        ax.view_init(elev=30, azim=-60)
         
-        # Add colorbar
-        cbar = plt.colorbar(sm, ax=ax, shrink=0.5, aspect=30)
-        cbar.set_label(physics_param, fontsize=12)
+        # Create simplified legend
+        # Mass legend
+        for mass in masses:
+            ax.plot([], [], [], '-', color=mass_color_map[mass], linewidth=3, label=f"{mass}M☉")
         
-        plt.savefig(f"plots/batch_cmd_3d_{primary_system.lower()}_{physics_param}.png", dpi=300, bbox_inches='tight')
-        print(f"Saved 3D batch CMD to plots/batch_cmd_3d_{primary_system.lower()}_{physics_param}.png")
+        # Scheme legend
+        scheme_styles = {'none': '--', 'exponential': '-', 'step': ':'}
+        for scheme, style in scheme_styles.items():
+            if any(params['scheme'] == scheme for params in run_params.values()):
+                ax.plot([], [], [], linestyle=style, color='gray', label=f"{scheme} scheme")
+        
+        if len(runs_data) <= 10:
+            ax.legend(fontsize=9, loc='best')
+        
+        plt.tight_layout()
+        plt.savefig(f"plots/batch_cmd_3d_{system.lower()}_age.png", dpi=300, bbox_inches='tight')
+        print(f"Saved 3D batch CMD to plots/batch_cmd_3d_{system.lower()}_age.png")
         plt.show()
     
     return True
 
 def main():
-    """Main function to determine whether to plot single or batch CMD analysis."""
+    """Main function to create CMD plots."""
     
     # Check for single run
     single_run_found = False
@@ -437,22 +476,22 @@ def main():
         if os.path.isdir(logs_path):
             print(f"Found LOGS directory at {logs_path}. Creating CMD plots for single run.")
             
-            # Create only the most informative CMD plot
+            # Create CMD plot colored by center_h1 (evolutionary phase)
             print(f"\nCreating CMD plot colored by center_h1 (evolutionary phase)...")
-            plot_single_cmd(logs_path, 'center_h1')
+            plot_single_cmd(logs_path, 'center_h1', create_3d=True)
             
             single_run_found = True
             break
     
     # Check for batch runs
     batch_run_found = False
-    for runs_path in ["../runs", "runs"]:
+    for runs_path in ["../batch_runs/runs", "runs"]:
         if os.path.isdir(runs_path):
-            print(f"\nFound batch runs directory at {runs_path}. Creating batch CMD analysis.")
+            print(f"\nFound batch runs directory at {runs_path}. Creating batch CMD plots.")
             
-            # Create only the most informative batch CMD plot
-            print(f"\nCreating batch CMD plot colored by mass...")
-            plot_batch_cmd(runs_path, 'center_h1')
+            # Create batch CMD plots
+            print(f"\nCreating batch CMD plots...")
+            plot_batch_cmd(runs_path, 'mass', create_3d=True)
             
             batch_run_found = True
             break

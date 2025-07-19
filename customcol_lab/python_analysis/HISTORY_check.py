@@ -6,7 +6,6 @@ import mesa_reader as mr
 import numpy as np
 from matplotlib.animation import FuncAnimation
 
-
 def get_phase_info_from_mesa(md):
     """Get evolutionary phase information using MESA's phase_of_evolution."""
 
@@ -29,6 +28,34 @@ def get_phase_info_from_mesa(md):
         phase_colors.append(color)
 
     return phases, phase_colors
+
+
+def get_mesa_phase_info(phase_code):
+    """
+    Map MESA's phase_of_evolution integer codes to phase names and colors.
+    Based on MESA's exact internal phase definitions from star_data_def.inc
+    """
+    # MESA phase codes (exact from source code)
+    phase_map = {
+        -1: ("Relax", "#C0C0C0"),  # Silver - Relaxation phase
+        1: ("Starting", "#E6E6FA"),  # Lavender - Starting phase
+        2: ("Pre-MS", "#FF69B4"),  # Hot pink - Pre-main sequence
+        3: ("ZAMS", "#00FF00"),  # Bright green - Zero-age main sequence
+        4: ("IAMS", "#0000FF"),  # Blue - Intermediate-age main sequence
+        5: ("TAMS", "#FF8C00"),  # Dark orange - Terminal-age main sequence
+        6: ("He-Burn", "#8A2BE2"),  # Blue violet - Helium burning (general)
+        7: ("ZACHeB", "#9932CC"),  # Dark orchid - Zero-age core helium burning
+        8: ("TACHeB", "#BA55D3"),  # Medium orchid - Terminal-age core helium burning
+        9: ("TP-AGB", "#8B0000"),  # Dark red - Thermally pulsing AGB
+        10: ("C-Burn", "#FF4500"),  # Orange red - Carbon burning
+        11: ("Ne-Burn", "#FF6347"),  # Tomato - Neon burning
+        12: ("O-Burn", "#FF8C00"),  # Dark orange - Oxygen burning
+        13: ("Si-Burn", "#FFA500"),  # Orange - Silicon burning
+        14: ("WDCS", "#708090"),  # Slate gray - White dwarf cooling sequence
+    }
+
+    return phase_map.get(phase_code, ("Unknown", "#808080"))
+
 
 
 def read_header_columns(history_file):

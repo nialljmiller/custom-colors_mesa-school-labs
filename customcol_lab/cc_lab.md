@@ -1,51 +1,297 @@
 # MESA Custom Colors Lab: Synthetic Photometry in Stellar Evolution
-
-## Overview
-
-Welcome to the MESA Custom Colors lab! This hands-on tutorial will teach you how to integrate synthetic photometry calculations into your MESA stellar evolution models. By the end of this lab, you'll understand how to:
-
-- Configure custom colors for different photometric systems
-- Monitor photometric evolution in real-time using pgstar
-- Analyze color-magnitude diagrams (CMDs) and spectral energy distributions (SEDs)
-- Run batch stellar evolution models with photometry
-- Perform advanced photometric analysis on stellar evolution tracks
-
-The custom colors module allows MESA to compute synthetic magnitudes and colors throughout stellar evolution by interpolating stellar atmosphere models and convolving with filter transmission curves. This provides crucial observational diagnostics for comparing models with real stellar populations.
+## Complete Summer School Guide
 
 ---
 
-## Part 0: Installing Custom Colors
+## Overview and Learning Objectives
 
--- We are not going to be using the official release of MESA for this lab, we will be downloading an unofficial pre-release from Zenodo, changing our MESA path to is and installing it. 
--- This gives up the **custom colors** module which we can use to construct synthetic photometry with our MESA simulations. 
+Welcome to the MESA Custom Colors lab! 
+This tutorial teaches you to integrate synthetic photometry calculations into stellar evolution models, bridging theoretical stellar physics with observational astronomy.
 
-### Zenodo
+### Learning Outcomes
+By completing this lab, you will be able to:
 
-### Extracting Download
+   - Configure and run MESA with synthetic photometry calculations
+   - Use Python tools for real-time monitoring and post-processing
+   - Explain how stellar atmosphere models connect to observable photometry
+   - Compare theoretical predictions with observational data
+   - Generate synthetic stellar populations for comparison with surveys
 
-### Changing MESA Path
+### Lab Structure
 
-### Installing
+| Part | Topic |
+|------|-------|
+| 0 | Installation & Setup |
+| 1 | Configuration & Physics |
+| 2 | Single Model Analysis |
+| 3 | Interactive Visualization |
+| 4 | Batch Model Studies |
+| 5 | Advanced Analysis |
 
 ---
 
-## Part 1: Understanding Custom Colors Configuration
+### Why Custom Colors?
 
-### What Is Custom Colors?
+Standard MESA provides fundamental stellar properties ($T_\text{eff}$, $\log g$, $L_\text{bol}$), but observers measure **magnitudes** and **colors** through specific filters. The custom colors module bridges this gap by:
+
+- Computing synthetic spectral energy distributions (SEDs)
+- Convolving with astronomical filter transmission curves
+- Providing magnitudes in standard photometric systems
+
+This enables direct comparison between stellar evolution models and observational surveys like Gaia, SDSS, and 2MASS.
+
+---
+
+## Part 0: Installation and Setup
+
+### Step 0.1: Download Pre-Release Version
+
+**Important**: This lab uses an unofficial MESA pre-release with the custom colors module. The module will be integrated into the main MESA distribution in a future release **very** soon.
+
+#### Option A: Command Line Download 
+
+```bash
+# Navigate to your MESA installation directory
+cd /path/to/your/mesa/installations/
+
+# Download from Zenodo using wget
+wget https://zenodo.org/records/16092864/files/mesa-2025-summerschool-prerelease.tar.gz
+
+# Alternative: using curl if wget is unavailable
+curl -L -o mesa-2025-summerschool-prerelease.tar.gz \
+  https://zenodo.org/records/16092864/files/mesa-2025-summerschool-prerelease.tar.gz
+```
+
+#### Option B: Browser Download
+
+1. **Visit Zenodo**: Navigate to https://zenodo.org/records/16092864
+2. **Download**: Click on `mesa-2025-summerschool-prerelease.tar.gz`
+
+#### Extract the Archive
+
+NOTE -- you cant just copy and paste these commands as you need to specify *your* filepath. 
+
+```bash
+# Navigate to download location (if it is in an awkward place you could move it to 'home' or put it in a directory along with your other MESA install.)
+cd /path/to/your/mesa/installations/
+
+# Extract the archive (this may take a few seconds)
+tar -xzf mesa-2025-summerschool-prerelease.tar.gz
+
+# Verify extraction
+ls -la mesa-2025-summerschool-prerelease/
+# Expected: Should see MESA directory structure with colors/ subdirectory
+
+```
+
+### Step 0.2: Environment Configuration
+
+#### Update MESA_DIR
+
+The **most critical** step is pointing your environment to the pre-release version:
+
+```bash
+# Store current MESA_DIR (for rollback if needed)
+echo "Previous MESA_DIR: $MESA_DIR"
+
+# Update to pre-release version (adjust path as needed)
+export MESA_DIR=/path/to/mesa-2025-summerschool-prerelease
+
+# Verify the change
+echo "New MESA_DIR: $MESA_DIR"
+ls $MESA_DIR/colors  # Should show colors directory
+```
+
+This step is critical and it is important to ensure you have correctly completed it. 
+If you are struggling or unsure, ask a TA. 
 
 
+#### Make Changes Persistent (optional)
 
-The MESA custom colors module computes **synthetic photometry** during stellar evolution by:
+The export command is temporary and will not persist through multiple terminal windows. You can save these changes by adding/changing them in your ".[shell]rc" file.
+Choose your shell and add the export command to the appropriate configuration file:
 
-1. **Interpolating stellar atmosphere models** (e.g., Kurucz 2003) to match your star's current Teff, log g, and metallicity
-2. **Generating spectral energy distributions (SEDs)** for each evolutionary timestep
-3. **Convolving with filter transmission curves** (e.g., GAIA, UBVRI, 2MASS)
-4. **Computing magnitudes and colors** using standard photometric calibrations
+```bash
+# For bash users (.bashrc or .bash_profile)
+echo 'export MESA_DIR=/path/to/mesa-2025-summerschool-prerelease' >> ~/.bashrc
+
+# For zsh users (.zshrc)
+echo 'export MESA_DIR=/path/to/mesa-2025-summerschool-prerelease' >> ~/.zshrc
+
+# For csh/tcsh users (.cshrc)
+echo 'setenv MESA_DIR /path/to/mesa-2025-summerschool-prerelease' >> ~/.cshrc
+
+# Reload your shell configuration
+source ~/.bashrc  # or appropriate file
+```
+
+#### Verify Environment Setup
+
+```bash
+# Essential checks
+echo "MESA_DIR: $MESA_DIR"
+echo "MESA SDK: $MESASDK_ROOT"  # Should be set from previous MESA installations, this DOES NOT need to change. 
+
+# Test MESA environment
+which gfortran  # Should return a path
+gfortran --version  # Check compiler version
+
+# Verify colors module files
+ls $MESA_DIR/colors/
+# Expected output: Makefile, src/, data/, test_suite/, README
+```
+
+### Step 0.3: Install MESA with Custom Colors
+
+#### Prerequisites Check
+
+```bash
+# Verify system requirements
+echo "System: $(uname -s)"
+echo "Architecture: $(uname -m)"
+echo "Available memory: $(free -h | grep Mem | awk '{print $2}')"  # Linux
+echo "Available disk space: $(df -h . | tail -1 | awk '{print $4}')"
+
+# Check compiler requirements
+gfortran --version | head -1
+# Should be version 8 or later
+
+# Verify MESA SDK is loaded
+echo $MESASDK_ROOT
+# Should point to your MESA SDK installation
+```
+
+#### Installation Process
+
+```bash
+cd $MESA_DIR
+
+# Clean any previous builds (optional but recommended)
+./clean
+
+# Install MESA with colors module
+./install
+
+# Verify install by looking to see if colors was properly extracted.
+cd $MESA_DIR/colors/data
+ls -a
+#You should see a hidden extracted flag file. 
+
+#If this is not here try to re install with 
+cd $MESA_DIR
+./clean; ./install
+```
 
 
-### Key Configuration Parameters
+#### Verify Successful Installation
 
-Let's examine the custom colors configuration in your `inlist_project` file:
+```bash
+# Check for successful completion
+echo "Installation status: $?"  # Should be 0
+ls $MESA_DIR/lib/  # Should contain many .a library files
+
+# Test basic MESA functionality
+cd $MESA_DIR/star/test_suite/custom_colors
+./mk  # Should compile without errorsCustom colours has been made
+```
+
+And then hopefully:
+
+```bash
+Custom colours has been made
+```
+
+### Complete Installation Checklist
+
+Verify each component before proceeding to the lab:
+
+#### System Environment
+- [ ] `$MESA_DIR` points to pre-release version
+- [ ] MESA SDK properly loaded (`$MESASDK_ROOT` set)
+- [ ] Fortran compiler available and compatible
+
+#### MESA Installation
+- [ ] `./install` completed successfully (exit code 0)
+- [ ] Core MESA libraries present in `$MESA_DIR/lib/`
+- [ ] Basic test case compiles and runs
+
+### Troubleshooting Common Issues
+
+#### Installation Failures
+
+**Problem**: `./install` fails with compiler errors
+```bash
+# Solution: Check compiler setup
+gfortran --version
+echo $MESASDK_ROOT
+# Reload MESA SDK if needed
+source $MESASDK_ROOT/bin/mesasdk_init.sh
+```
+
+**Problem**: Colors module not found during installation
+```bash
+# Solution: Verify directory structure
+ls $MESA_DIR/colors/src/
+# Should contain *.f90 files
+```
+
+#### Data Extraction Issues
+
+**Problem**: Photometric data extraction fails
+```bash
+# Solution: Manual extraction with verbose output
+cd $MESA_DIR/colors/data
+tar -xvf colors_data.txz
+# Check for permission issues or disk space
+```
+
+#### Environment Problems
+
+**Problem**: MESA_DIR not persistent across sessions
+```bash
+# Solution: Verify shell configuration file
+echo $SHELL  # Check your shell
+cat ~/.bashrc | grep MESA_DIR  # Verify export command
+```
+
+For additional support, consult the MESA forum at https://lists.mesastar.org/ or contact the lab instructor.
+
+---
+
+## Part 1: Understanding Custom Colors Physics
+
+### The Synthetic Photometry Pipeline
+
+The custom colors module implements a sophisticated pipeline that converts stellar physics into observable quantities:
+
+```
+Stellar Parameters    →    Atmosphere Model    →    SED    →    Photometry
+(Teff, log g, [M/H])       Interpolation              Convolution    (Magnitudes)
+```
+
+### Step 1.1: Physical Foundation
+
+#### Stellar Atmosphere Models
+
+MESA uses the **Kurucz 2003** atmosphere model grid covering:
+- **Temperature**: 3,500 K ≤ $T_\text{eff}$ ≤ 50,000 K
+- **Surface Gravity**: 0.0 ≤ $\log g$ ≤ 5.0
+- **Metallicity**: -5.0 ≤ [M/H] ≤ +1.0
+
+#### Mathematical Framework
+
+The synthetic magnitude in filter $X$ is computed as:
+
+$$m_X = -2.5 \log_{10}\left(\frac{\int F_\lambda(\lambda) S_X(\lambda) d\lambda}{\int F_\text{Vega}(\lambda) S_X(\lambda) d\lambda}\right)$$
+
+Where:
+- $F_\lambda(\lambda)$ = stellar flux density
+- $S_X(\lambda)$ = filter transmission function
+- $F_\text{Vega}(\lambda)$ = Vega reference spectrum
+
+### Step 1.2: Configuration Parameters
+
+Examine the colors namelist in your `inlist_project`:
 
 ```fortran
 &colors
@@ -54,374 +300,445 @@ Let's examine the custom colors configuration in your `inlist_project` file:
    vega_sed = 'data/stellar_models/vega_flam.csv'  
    stellar_atm = 'data/stellar_models/Kurucz2003all/'
    distance = 3.0857d17  ! 10 parsecs for absolute magnitudes
-   make_csv = .false.
+   make_csv = .false.     ! Enable for detailed SED output
 /
 ```
 
-**Parameter Breakdown:**
+#### Parameter Descriptions
 
+| Parameter | Purpose | Typical Values |
+|-----------|---------|----------------|
+| `use_colors` | Enable photometry calculations | `.true.` |
+| `instrument` | Filter system directory | `'GAIA'`, `'UBVRI'`, `'2MASS'` |
+| `stellar_atm` | Atmosphere model grid path | `'Kurucz2003all/'` |
+| `distance` | Distance for flux scaling | `3.0857d17` cm (10 pc) |
+| `make_csv` | Output detailed SEDs | `.false.` (performance) |
 
-...And what do each of these do?
+### Step 1.3: Available Filter Systems
 
-- `use_colors = .true.`: Enables synthetic photometry calculations
-- `instrument`: Specifies the filter system (GAIA, UBVRI, 2MASS, etc.)
-- `stellar_atm`: Path to stellar atmosphere model grid (Kurucz, PHOENIX, etc.)
-- `distance`: Distance in cm (10 pc = 3.0857d17 cm gives absolute magnitudes)
-- `make_csv`: Whether to output detailed SED files (disable for performance)
+Your installation includes several photometric systems:
 
+```bash
+ls $MESA_DIR/colors/data/filters/
+```
 
-
-### Physical Interpretation
-
-The custom colors module bridges **stellar physics** and **observational astronomy**:
-
-- **Teff, log g, [M/H]** from your MESA model are use to query a table of Stellar atmosphere models
-- **Interpolate** between the closest SEDs to your input params to construct a synthetic SED
-- **Convolve synthetic SED** with astronomical filters to obtain synthetic photometry (i.e. -- G, Gbp, Grp, etc.)
-- **Bolometric correction** perform the above convolution task on a Vega SED to obtain the Vega corrected magnitudes. 
-- **Profit** from the cool science you can now do!
-
+| System | Filters | Wavelength Range | Applications |
+|--------|---------|------------------|--------------|
+| GAIA | $G_{BP}$, $G$, $G_{RP}$ | 0.3-1.0 μm | Parallax surveys |
+| Johnson-Cousins | $U$, $B$, $V$, $R$, $I$ | 0.3-0.9 μm | Classical photometry |
+| 2MASS | $J$, $H$, $K_s$ | 1.2-2.2 μm | Infrared astronomy |
+| SDSS | $u$, $g$, $r$, $i$, $z$ | 0.3-1.0 μm | Large surveys |
 
 ---
 
-
 ## Part 2: Single Model with Real-Time Photometry
 
-### Step 2.1: Configure Your Model
+### Step 2.1: Model Configuration
 
-First, examine the provided `inlist_project` file. Notice it extends the Lab1 configuration with additional custom colors:
+#### Enable Evolutionary Phase Tracking
 
-```bash
-cat inlist_project
+Edit your `inlist_project` to include photometric evolution diagnostics:
+
+```fortran
+! In &star_job namelist
+history_columns_file = 'history_columns.list'
+
+! In &controls namelist
+photo_interval = 50        ! Frequency of detailed output
 ```
 
-Ensure colors is turned on and 'make_csv' is enabled (As previously described, 'make_csv' will construct a csv for SED measured through each filter. This is good for live plotting.)
+#### Configure History Output
 
-Now we need to navigate to the history file and enable the phase_of_evolution identifier ~ line 942. (Failing to do this wont crash the code but it will make your plots look cooler later on...)
+Edit `history_columns.list` around line 942:
 
-```bash
-!phase_of_evolution ! Integer mapping to the type of evolution see star_data/public/star_data_def.inc for definitions
+```fortran
+! Add this line for phase identification
+phase_of_evolution     ! Integer mapping to evolution phases
+
+! Ensure these are included
+model_number
+star_age
+log_dt
+log_Teff
+log_L
+log_g
 ```
 
+### Step 2.2: Understanding Pgstar Integration
 
+The custom colors module integrates with pgstar for real-time visualization:
 
-### Step 2.2: Run the Model with Live Photometry
+```fortran
+! In &pgstar namelist
+Kipp_win_flag = .true.
+Kipp_win_width = 12
+Kipp_win_aspect_ratio = 0.75
 
-Start your evolution with pgstar enabled to watch the photometric evolution in real-time:
+! Enable custom colors plots
+History_Panels1_win_flag = .true.
+History_Panels1_title = 'Photometric Evolution'
+```
+
+### Step 2.3: Run the Model
 
 ```bash
 ./rn
 ```
 
-**What to Watch For:**
+#### Expected Terminal Output
 
-1. **Terminal Output**: Look for custom colors initialization messages:
-   ```
-   Loading stellar atmosphere models from data/stellar_models/Kurucz2003all/
-   Using GAIA photometric system: Gbp, G, Grp
-   Computing synthetic photometry at each timestep...
-   ```
+```
+Loading stellar atmosphere models from data/stellar_models/Kurucz2003all/
+Model grid spans: Teff [3500-50000], log_g [0.0-5.0], [M/H] [-5.0,+1.0]
+Using GAIA photometric system: Gbp, G, Grp
+Computing synthetic photometry at each timestep...
 
-2. **Pgstar Windows**: 
-   - **Lab 1 Window**: You should see the pgplot from the first labs and...
-   - **Light Curve Window**: You should also see a Gaia G band lightcurve. 
-   
+model    age/yr    log_Teff    log_L    Gbp      G        Grp
+    1   0.000E+00     3.764   -0.023   4.832   4.721   4.598
+   50   1.234E+06     3.763   -0.021   4.829   4.719   4.596
+  100   2.501E+06     3.762   -0.019   4.826   4.717   4.594
+```
+
+#### Pgstar Windows to Monitor
+
+1. **HR Diagram**: Track evolution in fundamental parameter space
+2. **Photometric Panel**: Real-time color-magnitude diagram
+3. **Kippenhahn Diagram**: Internal structure evolution
+
+### Step 2.4: Physical Interpretation
+
+#### Main Sequence Evolution
+
+During core hydrogen burning, observe:
+- **Slow color evolution**: Colors change gradually as $T_\text{eff}$ decreases
+- **Luminosity increase**: Main sequence brightening due to core evolution
+- **Filter dependence**: Blue filters show larger magnitude changes
+
+#### Post-Main Sequence Changes
+
+Watch for rapid transitions:
+- **Subgiant branch**: Accelerated reddening
+- **Red giant branch**: Dramatic magnitude changes
+- **Helium flash**: Potential photometric signatures
+
 ---
 
-
-## Part 3: Interactive Analysis with Python Helpers
-
-Now let's use the powerful Python visualization tools to explore your photometric results.
+## Part 3: Interactive Analysis with Python Tools
 
 ### Step 3.1: Real-Time CMD Monitoring
 
-First, let's look at your stellar evolution in color-magnitude space:
+Launch the interactive color-magnitude diagram viewer:
 
 ```bash
 cd python_analysis
 python plot_cmd.py
 ```
 
-This script creates:
-- **2D CMD**: Classical color-magnitude diagram (Gbp-Grp vs G)
-- **3D CMD**: Time-evolved CMD showing evolutionary tracks
-- **Interactive features**: Zoom, rotate, and explore different evolutionary phases
+#### Features and Controls
 
-**Physical Interpretation:**
-- **Horizontal movement**: Temperature changes (color evolution)
-- **Vertical movement**: Luminosity changes (magnitude evolution)  
-- **Evolutionary speed**: Fast phases show closely spaced points
+The script automatically detects your photometric system and creates:
 
+- **2D CMD**: Classical color-magnitude diagram with evolutionary track
+- **3D CMD**: Time-evolved diagram showing age progression
+- **Phase Coloring**: MESA's built-in evolutionary phase identification
 
-**Why this matters:**
+#### Scientific Analysis Questions
 
-- The HR diagram shows the "true" stellar evolution path in fundamental physics space
-- The CMD shows what you'd actually observe if you pointed a telescope at this star
-- This difference is why astronomers need stellar evolution models to interpret observational data!
-
-
-
+1. **Color Evolution**: How does $G_{BP} - G_{RP}$ change during main sequence evolution?
+2. **Luminosity Function**: What determines the magnitude range?
+3. **Evolutionary Speed**: Where does your star spend most time in CMD space?
 
 ### Step 3.2: Spectral Energy Distribution Analysis
 
-Explore the detailed SEDs underlying your photometry:
+Explore the underlying stellar spectra:
 
 ```bash
 python SED_check.py
 ```
 
-This interactive tool shows:
-- **SED evolution**: How your star's spectrum changes with time
-- **Filter integration**: Visual representation of magnitude calculations
-- **Atmosphere model quality**: Interpolation accuracy diagnostics
+#### Interactive Features
 
-**Key Features:**
-- Slide through evolutionary timesteps
-- Compare observed vs synthetic photometry
-- Understand wavelength dependence of stellar evolution
+- **Wavelength Range**: Zoom into specific spectral regions
+- **Filter Overlay**: Visualize how filters sample the spectrum
+- **Time Evolution**: See how the SED shape changes
 
-### Step 3.3: Live Monitoring During Evolution
+#### Physical Interpretation
 
-For your next run, try the real-time monitoring:
+- **Blackbody Comparison**: How does the stellar SED differ from a perfect blackbody?
+- **Line Effects**: Where do absorption lines affect photometry?
+- **Filter Sensitivity**: Which filters are most sensitive to $T_\text{eff}$ changes?
+
+### Step 3.3: Live Evolution Monitoring
+
+For ongoing simulations, monitor evolution in real-time:
 
 ```bash
-# In one terminal
+# Terminal 1: Run MESA
 ./rn
 
-# In another terminal  
+# Terminal 2: Live monitoring
 cd python_analysis
 python HISTORY_check.py
 ```
 
-This provides live updates of:
-- Photometric evolution plots
-- Color-color diagrams
-- Magnitude vs time relationships
+#### Live Analysis Capabilities
+
+- **Automatic Updates**: Plots refresh as new data becomes available
+- **Multi-Panel Display**: Simultaneous HR diagram and CMD views
+- **Phase Identification**: Color-coded evolutionary phases
+- **Export Functionality**: Save key evolutionary moments
 
 ---
-
-
-
-
-
-
-
-
-
-
 
 ## Part 4: Batch Models and Parameter Studies
 
 ### Step 4.1: Understanding the Parameter Grid
 
-Examine the batch model setup:
+Systematic studies require exploring parameter space efficiently. Examine the provided batch setup:
 
 ```bash
 cd batch_runs
 ls batch_inlists/ | head -10
+
+# Expected output:
+inlist_M15_Z0140_exponential_fov010
+inlist_M15_Z0140_exponential_fov020
+inlist_M15_Z0140_step_fov010
+inlist_M15_Z0140_noovs
+inlist_M2_Z0014_exponential_fov010
+...
 ```
 
-The provided grid explores:
-- **Stellar masses**: M = 2, 5, 15, 30 M☉
-- **Metallicities**: Z = 0.0014, 0.0140 (roughly Z☉/10 and Z☉)
-- **Overshooting**: Various fov and f values
-- **Control models**: Some with "noovs" (no overshooting)
+#### Parameter Grid Design
+
+| Parameter | Values | Physical Significance |
+|-----------|--------|----------------------|
+| **Mass** | 2, 5, 15, 30 M☉ | Main sequence lifetime, final fate |
+| **Metallicity** | Z = 0.0014, 0.0140 | Opacity effects, stellar winds |
+| **Overshooting** | None, exponential, step | Convective mixing efficiency |
+| **$f_\text{ov}$** | 0.01, 0.02, 0.03 | Overshooting parameter |
 
 ### Step 4.2: Running Batch Photometry
 
-Execute the batch run pipeline:
+Execute the automated batch pipeline:
 
 ```bash
-# Check dependencies and setup
+# Verify dependencies
 python 0_dependency_check.py
 
-# Generate batch inlists with custom colors
+# Generate inlists with colors configuration
 python 1_make_batch.py
 
-# Verify inlist configurations
+# Verify all configurations
 python 2_verify_inlists.py
 
-# Run the full grid (this takes time!)
+# Execute the full grid (computationally intensive!)
 python 3_run_batch.py
 
-# Verify successful completion
+# Validate completion
 python 4_verify_outlists.py
 
-# Collect photometric results
+# Collect photometric data
 python 5_construct_output.py
 ```
 
-**Pro Tip**: Start with a smaller subset for testing:
+#### Performance Considerations
+
+| Grid Size | Estimated Time | Recommendations |
+|-----------|----------------|-----------------|
+| 4 models | 1-4 hours | Initial testing |
+| 16 models | 4-12 hours | Partial parameter study |
+| 64 models | 1-3 days | Full grid (varies by system) |
+
+### Step 4.3: Batch Analysis and Interpretation
+
+#### Mass Sequence Analysis
+
 ```bash
-# Edit 3_run_batch.py to run only a few models first
-# Then scale up to the full grid
+python plot_cmd.py  # Now includes batch mode
 ```
 
-### Step 4.3: Batch Photometric Analysis
+Creates comparative visualizations:
+- **Mass-dependent tracks**: Different evolutionary paths
+- **Metallicity effects**: Systematic shifts in CMD position
+- **Overshooting impact**: Main sequence width variations
 
-Once the batch runs complete, analyze the results:
+#### Scientific Questions for Investigation
 
-```bash
-cd ../python_analysis
-python plot_cmd.py  # Now includes batch analysis
-```
-
-This creates:
-- **Mass sequence CMDs**: Compare evolutionary tracks for different masses
-- **Metallicity effects**: See how Z affects photometric evolution
-- **Overshooting impact**: Quantify effects on main sequence and beyond
+1. **Mass-Luminosity Relation**: How does photometry reveal the M-L relationship?
+2. **Metallicity Degeneracy**: Can colors break age-metallicity degeneracy?
+3. **Convective Efficiency**: What photometric signatures indicate overshooting?
 
 ---
 
-
-
-
-
-## Part 5: Advanced Analysis and Bonus Tasks
+## Part 5: Advanced Analysis and Research Applications
 
 ### Step 5.1: Color-Color Diagrams
 
-Explore multi-dimensional color relationships:
+Multi-dimensional color analysis reveals subtle evolutionary effects:
 
 ```bash
-python colorcolor_plot.py
+python plot_colorcolor.py
 ```
 
-Creates sophisticated diagnostic plots:
-- **Multiple color combinations**: (Gbp-G) vs (G-Grp), etc.
-- **Evolutionary phase mapping**: Color evolution through different phases
-- **Theoretical isochrone comparison**: Compare to stellar population models
+#### Advanced Diagnostics
 
-### Step 5.2: Physics-Photometry Correlations
+- **Temperature Sensitivity**: $(G_{BP} - G)$ vs $(G - G_{RP})$
+- **Metallicity Indicators**: Color combinations sensitive to [M/H]
+- **Evolutionary Phase Mapping**: Distinct regions for different phases
 
-Connect stellar physics to observable properties:
+### Step 5.2: Isochrone Construction
+
+Generate theoretical stellar populations:
+
+```bash
+python plot_isochrone.py
+```
+
+#### Interactive Features
+
+- **Age Slider**: Explore population evolution
+- **3D Visualization**: Age-color-magnitude relationships
+- **Animation Export**: Create evolutionary movies
+
+#### Research Applications
+
+- **Cluster Dating**: Compare with observed CMDs
+- **Star Formation History**: Constrain stellar populations
+- **Distance Determination**: Isochrone fitting techniques
+
+### Step 5.3: Lightcurve Analysis
+
+Time-domain photometry for variable stars:
+
+```bash
+python plot_lc.py
+```
+
+#### Applications
+
+- **Pulsation Studies**: Intrinsic variability
+- **Eclipse Modeling**: Binary star systems
+- **Evolutionary Timescales**: Rapid transition phases
+
+### Step 5.4: Physics-Photometry Correlations
+
+Connect internal physics to observable properties:
 
 ```bash
 python colors_physics.py
 ```
 
-Analyzes relationships between:
-- **Core hydrogen abundance** vs photometric colors
-- **Surface gravity** vs magnitude evolution
-- **Effective temperature** vs multi-band photometry
-- **Mass-radius relationships** via photometric diagnostics
+#### Correlation Analysis
 
-### Step 5.3: Light Curve Analysis
+- **Core Hydrogen vs Color**: Evolutionary phase indicators
+- **Convective Core Mass**: Relationship to photometric properties
+- **Surface Gravity**: Connection to magnitude evolution
 
-For variable stars and evolutionary transitions:
+---
 
+## Troubleshooting and FAQs
+
+### Common Installation Issues
+
+**Problem**: MESA_DIR not updated correctly
 ```bash
-python lc_plot.py
+# Solution: Verify environment
+echo $MESA_DIR
+source ~/.bashrc  # Reload shell configuration
 ```
 
-Generates:
-- **Multi-band light curves**: Simultaneous evolution in all filters
-- **Color variability**: How colors change during rapid phases
-- **Pulsation analysis**: For models that show instabilities
+**Problem**: Missing stellar atmosphere data
+```bash
+# Solution: Manual data extraction
+cd $MESA_DIR/colors/data
+tar -xf colors_data.txz
+```
 
-### Step 5.4: Custom Analysis (Your Turn!)
+### Runtime Errors
 
-Use the analysis templates to explore:
+**Problem**: "Interpolation outside grid bounds"
+- **Cause**: Stellar parameters exceed atmosphere model coverage
+- **Solution**: Check $T_\text{eff}$, $\log g$, [M/H] ranges in terminal output
 
-1. **Metallicity sequences**: How does [M/H] affect observable properties?
-2. **Mass-luminosity relationships**: Compare synthetic vs observational relations
-3. **Stellar population synthesis**: Combine models to simulate clusters
-4. **Observational planning**: Which filters best distinguish evolutionary phases?
+**Problem**: Python plotting failures
+```bash
+# Install required packages
+pip install mesa_reader matplotlib numpy scipy pandas
+```
 
+### Performance Optimization
 
+| Issue | Solution | Impact |
+|-------|----------|--------|
+| Slow SED calculation | Set `make_csv = .false.` | 50% speedup |
+| Memory usage | Reduce `photo_interval` | Lower memory |
+| Grid size | Start with subset | Faster testing |
 
+### Advanced Configuration
 
+#### Custom Filter Systems
 
+Add new photometric systems:
+```bash
+# Create filter directory
+mkdir $MESA_DIR/colors/data/filters/CUSTOM/
 
+# Add transmission curves (wavelength, transmission)
+# Format: ASCII files with .dat extension
+```
 
----
+#### Atmosphere Model Alternatives
 
-## Interpretation Guide
-
-### Physical Understanding
-
-**Main Sequence Evolution:**
-- Colors slowly evolve as core hydrogen depletes
-- Magnitude changes primarily reflect mass loss (if any)
-- Different masses show distinct photometric signatures
-
-**Post-Main Sequence:**
-- **Subgiant Branch**: Rapid color evolution, moderate magnitude changes  
-- **Red Giant Branch**: Dramatic reddening, significant brightening
-- **Horizontal Branch**: Blue evolution, complex magnitude behavior
-
-**Metallicity Effects:**
-- Lower metallicity → bluer colors (less line blanketing)
-- Different atmosphere structure → modified magnitude relationships
-- Evolutionary timescale differences reflected in photometric tracks
-
-### Observational Connections
-
-**Real Stellar Populations:**
-- Your synthetic CMDs can be compared directly to observed clusters
-- Color distributions constrain stellar formation histories
-- Magnitude functions probe stellar mass distributions
-
-**Survey Astronomy:**
-- GAIA DR3 provides precisely the photometry you're computing
-- Large sky surveys (SDSS, 2MASS, etc.) use these filter systems
-- Your models predict what space missions will observe
-
-### Computational Impacts and pitfalls
-
-**Performance Considerations:**
-- Custom colors adds <10% computational overhead
-- Atmosphere model interpolation is the main cost
-- Filter convolution is fast compared to evolution calculation
-
-**Atmosphere model grid coverage and resolution**
-- Stellar atmosphere models have no universal agreed upon data format 
-- Stellar atmosphere models do not guarantee an even and fully sampled parameter space
-- Your MESA simulation **CAN** produce inputs outside of the stellar atmosphere range without warning
-
+Replace Kurucz models with PHOENIX or MARCS:
+- Update `stellar_atm` parameter
+- Ensure consistent metallicity scales
+- Validate interpolation accuracy
 
 ---
 
-## Troubleshooting
+## Appendix: Quick Reference
 
-### Common Issues
+### Essential Commands
 
-**No photometric output:**
-- Check `use_colors = .true.` in namelist
-- Check you correctly changed your MESA path `echo $MESA_DIR`
+```bash
+# Installation
+export MESA_DIR=/path/to/prerelease
+./install
 
-**Python plotting errors:**
-- Install required packages: `mesa_reader`, `matplotlib`, `numpy`
-- Check Python path includes analysis scripts
-- Verify LOGS directory structure
+# Single model
+./rn
 
+# Batch processing
+python 1_make_batch.py
+python 3_run_batch.py
 
----
+# Analysis
+python plot_cmd.py
+python plot_colorcolor.py
+python plot_isochrone.py
+```
 
-## Learning Objectives Summary
+### Key Configuration Parameters
 
-After completing this lab, you should understand:
+```fortran
+&colors
+   use_colors = .true.
+   instrument = 'data/filters/GAIA/GAIA'
+   stellar_atm = 'data/stellar_models/Kurucz2003all/'
+   distance = 3.0857d17
+   make_csv = .false.
+/
+```
 
--- **Conceptual**: How synthetic photometry connects stellar physics to observations  
--- **Technical**: Custom colors configuration and workflow integration  
--- **Practical**: Real-time monitoring and analysis of photometric evolution  
--- **Scientific**: Interpretation of color-magnitude diagrams and evolutionary tracks  
+### Python Dependencies
 
+```bash
+pip install mesa_reader matplotlib numpy scipy pandas
+```
 
-### Next Steps
+### Help
 
-Consider extending this work by:
-- Comparing to real cluster CMDs from GAIA or HST
-- Implementing additional filter systems (JWST, Roman, etc.)
-- Connecting to stellar population synthesis codes
-
----
-
-## Data and Code References
-
-**Stellar Atmosphere Models:** Kurucz 2003 (http://svo2.cab.inta-csic.es/theory/newov2/)  
-**Filter Systems:** SVO Filter Profile Service (http://svo2.cab.inta-csic.es/theory/fps/)  
-**MESA Documentation:** https://docs.mesastar.org/  
-**Custom Colors Module:** MESA test_suite/custom_colors/  
-
-**Questions?** Consult the MESA forum (https://lists.mesastar.org/) or Niall Miller (nmille39@uwyo.edu) or ask the summer school instructors.
+- **MESA Forum**: https://lists.mesastar.org/
+- **Lab Developer**: Niall Miller (nmille39@uwyo.edu)
+- **Summer School Instructors** 
