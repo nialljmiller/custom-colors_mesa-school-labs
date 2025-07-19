@@ -290,3 +290,10 @@ inlist_M5_Z0.0014_step_fov0.02_f00.01,129,completed
 inlist_M5_Z0.0014_step_fov0.04_f00.001,101,completed
 inlist_M5_Z0.0014_step_fov0.04_f00.005,124,completed
 inlist_M5_Z0.0014_step_fov0.04_f00.01,143,completed
+inlist_M10_Z0.0140_noovs,96,completed
+inlist_M10_Z0.0140_exponential_fov0.01_f00.001,87,completed
+inlist_M10_Z0.0140_exponential_fov0.01_f00.005,97,completed
+inlist_M10_Z0.0140_exponential_fov0.01_f00.010,97,completed
+inlist_M10_Z0.0140_exponential_fov0.03_f00.001,98,completed
+inlist_M10_Z0.0140_exponential_fov0.03_f00.005,97,completed
+inlist_M10_Z0.0140_exponential_fov0.03_f00.01,96,completed
