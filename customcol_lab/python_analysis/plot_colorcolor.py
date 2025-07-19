@@ -41,68 +41,13 @@ def read_header_columns(history_file):
 
 def setup_colorcolor_params(md, filter_columns):
     """Set up color-color parameters based on available filters with priority system."""
-    
-    # Priority 1: GAIA colors (Gbp-Grp vs Grp-Grvs)
-    if all(f in filter_columns and hasattr(md, f) for f in ['Gbp', 'Grp', 'Grvs']):
-        color1 = md.Gbp - md.Grp
-        color2 = md.Grp - md.Grvs
-        color1_label = "Gbp - Grp"
-        color2_label = "Grp - Grvs"
-        system = "GAIA"
-        print("Using GAIA color-color: (Gbp-Grp) vs (Grp-Grvs)")
-        
-    # Priority 2: Johnson-Cousins (B-V vs V-I)
-    elif all(f in filter_columns and hasattr(md, f) for f in ['B', 'V', 'I']):
-        color1 = md.B - md.V
-        color2 = md.V - md.I
-        color1_label = "B - V"
-        color2_label = "V - I"
-        system = "Johnson"
-        print("Using Johnson color-color: (B-V) vs (V-I)")
-        
-    # Priority 3: SDSS (g-r vs r-i)
-    elif all(f in filter_columns and hasattr(md, f) for f in ['g', 'r', 'i']):
-        color1 = getattr(md, 'g') - getattr(md, 'r')
-        color2 = getattr(md, 'r') - getattr(md, 'i')
-        color1_label = "g - r"
-        color2_label = "r - i"
-        system = "SDSS"
-        print("Using SDSS color-color: (g-r) vs (r-i)")
-        
-    # Priority 4: 2MASS (J-H vs H-K)
-    elif all(f in filter_columns and hasattr(md, f) for f in ['J', 'H', 'K']):
-        color1 = md.J - md.H
-        color2 = md.H - md.K
-        color1_label = "J - H"
-        color2_label = "H - K"
-        system = "2MASS"
-        print("Using 2MASS color-color: (J-H) vs (H-K)")
-        
-    # Fallback: Use available filters to construct colors
-    elif len(filter_columns) >= 3:
-        f1, f2, f3 = filter_columns[0], filter_columns[1], filter_columns[2]
-        try:
-            col1 = getattr(md, f1)
-            col2 = getattr(md, f2)
-            col3 = getattr(md, f3)
-        except AttributeError:
-            col1 = md.data(f1)
-            col2 = md.data(f2)
-            col3 = md.data(f3)
-            
-        color1 = col1 - col2
-        color2 = col2 - col3
-        color1_label = f"{f1} - {f2}"
-        color2_label = f"{f2} - {f3}"
-        system = "Custom"
-        print(f"Using custom color-color: ({color1_label}) vs ({color2_label})")
-        
-    else:
-        print("Error: Need at least 3 filters for color-color diagram")
-        return None, None, None, None, None
-    
-    return color1, color2, color1_label, color2_label, system
-
+    color1 = md.Gbp - md.Grp
+    color2 = md.Grp - md.Grvs
+    color1_label = "Gbp - Grp"
+    color2_label = "Grp - Grvs"
+    system = "GAIA"
+    print("Using GAIA color-color: (Gbp-Grp) vs (Grp-Grvs)")
+      
 def get_physics_param(md, param_name):
     """Get physics parameter for color coding - focused on most informative recorded columns."""
     physics_params = {
