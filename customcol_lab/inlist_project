@@ -16,7 +16,7 @@
 
   ! save a model at the end of the run
     save_model_when_terminate = .true.
-    save_model_filename = 'M5_Z0.0014_step_fov0.04_f00.005.mod'
+    save_model_filename = 'M10_Z0.0140_noovs.mod'
 
   ! increasing the first time step after a convective core has formed from 0.00001 years to 1 year to speed up the computation
     set_initial_dt = .true.
@@ -37,7 +37,7 @@
   ! see kap/defaults/kap.defaults
 
     use_Type2_opacities = .true.
-    Zbase = 0.0014d0
+    Zbase = 0.0140d0
 
 / ! end of kap namelist
 
@@ -87,8 +87,8 @@
   ! see star/defaults/controls.defaults
 
   ! starting specifications
-    initial_mass = 5d0 ! in Msun units
-    initial_z = 0.0014 ! initial metal mass fraction
+    initial_mass = 10d0 ! in Msun units
+    initial_z = 0.0140 ! initial metal mass fraction
 
   ! when to stop
 
@@ -117,12 +117,12 @@
 
   ! mixing
      use_Ledoux_criterion = .true.
-         overshoot_scheme(1) = 'step'
-         overshoot_zone_type(1) = 'any'
-         overshoot_zone_loc(1) = 'core'
-         overshoot_bdy_loc(1) = 'top'
-         overshoot_f(1) = 0.04d0
-         overshoot_f0(1) = 0.005d0
+!    overshoot_scheme(1) = 'step'
+!    overshoot_zone_type(1) = 'any'
+!    overshoot_zone_loc(1) = 'core'
+!    overshoot_bdy_loc(1) = 'top'
+!    overshoot_f(1) = 0.30d0
+!    overshoot_f0(1) = 0.01d0
 
   ! timesteps
 

@@ -1,4 +1,4 @@
-baseURL = "https://nialljmiller.github.io/mesa-school-labs/"
+baseURL = "https://nialljmiller.github.io/custom-colors_mesa-school-labs/"
 languageCode = 'en-us'
 title = 'MESA School Leuven 2025'
 theme = 'Hextra'
@@ -10,7 +10,7 @@ width = 50
 height = 50
 [[menu.main]]
 name = 'Custom Colors Readme'
-pageRef = '/custom-colors/'
+pageRef = '/customcol_lab/'
 weight = 1
 [markup.goldmark.extensions.passthrough]
 enable = true
