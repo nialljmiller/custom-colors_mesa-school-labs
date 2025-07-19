@@ -10,11 +10,8 @@ width = 50
 height = 50
 [[menu.main]]
 name = 'Custom Colors Readme'
-pageRef = '/customcol_lab/'
+pageRef = '/custom-colors/'
 weight = 1
-path = '/customcol_lab/python_analysis/plots/isochrone_gaia_evolution.gif'
-width = 50
-height = 50
 [markup.goldmark.extensions.passthrough]
 enable = true
 [markup.goldmark.extensions.passthrough.delimiters]

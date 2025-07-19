@@ -285,3 +285,5 @@ inlist_M5_Z0.0014_exponential_fov0.10_f00.001,102,completed
 inlist_M5_Z0.0014_exponential_fov0.10_f00.005,127,completed
 inlist_M5_Z0.0014_exponential_fov0.10_f00.01,121,completed
 inlist_M5_Z0.0014_step_fov0.02_f00.001,90,completed
+inlist_M5_Z0.0014_step_fov0.02_f00.005,100,completed
+inlist_M5_Z0.0014_step_fov0.02_f00.01,129,completed
