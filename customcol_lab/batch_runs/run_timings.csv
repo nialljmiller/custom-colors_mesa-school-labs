@@ -309,3 +309,7 @@ inlist_M10_Z0.0140_step_fov0.30_f00.01,88,completed
 inlist_M10_Z0.0014_noovs,89,completed
 inlist_M10_Z0.0014_exponential_fov0.01_f00.001,85,completed
 inlist_M10_Z0.0014_exponential_fov0.01_f00.005,85,completed
+inlist_M10_Z0.0014_exponential_fov0.01_f00.010,96,completed
+inlist_M10_Z0.0014_exponential_fov0.03_f00.001,88,completed
+inlist_M10_Z0.0014_exponential_fov0.03_f00.005,95,completed
+inlist_M10_Z0.0014_exponential_fov0.03_f00.01,99,completed

@@ -15,7 +15,7 @@ height = 50
 
 [[menu.main]]
 name = 'Custom Colors Readme'
-pageRef = '/customcol_lab/'
+pageRef = '/customcol_lab/_index.md'
 weight = 1
 
 [markup.goldmark.extensions.passthrough]
