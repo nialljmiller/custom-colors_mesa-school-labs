@@ -12,24 +12,16 @@
 Welcome to the MESA Custom Colors lab! 
 This tutorial teaches you to integrate synthetic photometry calculations into stellar evolution models, bridging theoretical stellar physics with observational astronomy.
 
-### Learning Outcomes
-By completing this lab, you will be able to:
-
-   - Configure and run MESA with synthetic photometry calculations
-   - Use Python tools for real-time monitoring and post-processing
-   - Explain how stellar atmosphere models connect to observable photometry
-   - Compare theoretical predictions with observational data
-   - Generate synthetic stellar populations for comparison with surveys
-
 ### Lab Structure
 
 | Part | Topic |
 |------|-------|
 | 0 | Installation & Setup |
 | 1 | Configuration & Physics |
-| 2 | Single Model Analysis |
-| 3 | Interactive Visualization |
-| 4 | Batch Model Studies |
+| 2 | Running a Model |
+| 3 | Python Visualization |
+| 4 | Batch Runs |
+| 5 | More Python Visualization |
 
 ---
 
@@ -56,25 +48,25 @@ This enables direct comparison between stellar evolution models and observationa
 
 #### Extract the Archive
 
-NOTE -- you cant just copy and paste these commands as you need to specify *your* filepath. 
+**You cant just copy and paste these commands as you need to specify *your* filepath.**
 
 ```bash
-# Navigate to download location (if it is in an awkward place you could move it to 'home' or put it in a directory along with your other MESA install.)
+# Navigate to download location 
 cd /path/to/your/mesa/installations/
 
-# Extract the archive (this may take a few seconds)
-tar -xzf mesa-2025-summerschool-prerelease.tar.gz
+# Extract the zip archive
+unzip mesa-2025-summerschool-prerelease.zip
 
 # Verify extraction
 ls -la mesa-2025-summerschool-prerelease/
 # Expected: Should see MESA directory structure with colors/ subdirectory
-
 ```
 
 ### Step 0.2: Environment Configuration
 
 #### Update MESA_DIR
 
+**!!Read Carefully!!**
 The **most critical** step is pointing your environment to the pre-release version:
 
 ```bash
@@ -96,6 +88,9 @@ If you are struggling or unsure, ask a TA.
 #### Make Changes Persistent (optional)
 
 The export command is temporary and will not persist through multiple terminal windows. You can save these changes by adding/changing them in your ".[shell]rc" file.
+
+YOU WILL NEED TO CHANGE THIS BACK TO THE OFFICIAL RELEASE FOR THE REST OF THE LABS THIS WEEK.
+
 Choose your shell and add the export command to the appropriate configuration file:
 
 ```bash
@@ -120,25 +115,11 @@ echo "MESA_DIR: $MESA_DIR"
 echo "MESA SDK: $MESASDK_ROOT"  # Should be set from previous MESA installations, this DOES NOT need to change. 
 
 # Verify colors module files
-ls -a $MESA_DIR/colors/
+ls -a $MESA_DIR/colors/private
 # Expected output: Makefile, src/, data/, test_suite/, README
 ```
 
 ### Step 0.3: Install MESA with Custom Colors
-
-#### Prerequisites Check
-
-```bash
-# Verify system requirements
-echo "System: $(uname -s)"
-echo "Architecture: $(uname -m)"
-echo "Available memory: $(free -h | grep Mem | awk '{print $2}')"  # Linux
-echo "Available disk space: $(df -h . | tail -1 | awk '{print $4}')"
-
-# Verify MESA SDK is loaded
-echo $MESASDK_ROOT
-# Should point to your MESA SDK installation
-```
 
 #### Installation Process
 
@@ -155,8 +136,11 @@ cd $MESA_DIR
 cd $MESA_DIR/colors/data
 ls -a
 #You should see a hidden extracted flag file. 
+```
 
+```bash
 #If this is not here try to re install with 
+echo $MESA_DIR
 cd $MESA_DIR
 ./clean; ./install
 ```
@@ -179,6 +163,21 @@ And then hopefully:
 ```bash
 Custom colours has been made
 ```
+
+You can then edit the project_inlist file:
+
+```bash
+pgstar_flag = .true.  ! Enable real-time plotting (This is set to .false. for test hub -- .true. will enable a CMD and Light curves!!)
+```
+
+Save this and then:
+
+```bash
+./rn
+```
+
+Some synthetic lightcurve should pop up from pgstar
+
 
 ### Complete Installation Checklist
 
@@ -740,8 +739,6 @@ plots/
 echo $MESA_DIR
 source ~/.bashrc  # Reload shell configuration
 ```
-
-
 
 **Problem**: Python plotting failures
 
