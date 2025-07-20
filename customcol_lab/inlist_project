@@ -8,7 +8,7 @@
     pre_ms_relax_num_steps = 100
 
   ! display on-screen plots
-    pgstar_flag = .false.
+    pgstar_flag = .true.
 
   ! Our selection of only the finest history columns to include
     history_columns_file = 'my_history_columns.list'
@@ -74,10 +74,10 @@
       stellar_atm = '/colors/data/stellar_models/Kurucz2003all/'
       
       ! Physical parameters for synthetic photometry
-      distance = 3.0857d16         ! Distance to star in cm (1 pc = 3.0857e16 m for absolute mags)
+      distance = 3.0857d16         ! Distance to star in cm (1 pc = 3.0857e16 m)
       
       ! Output options
-      make_csv = .false.            ! Write detailed SED files showing filter convolution  -- This is also needed for plotting the SED.
+      make_csv = .true.            ! Write detailed SED files showing filter convolution  -- This is also needed for plotting the SED.
                                    ! Creates files like: LOGS/SED/G_SED.csv, LOGS/SED/VEGA_G_SED.csv
 / ! end of colors namelist
 
@@ -87,7 +87,7 @@
   ! see star/defaults/controls.defaults
 
   ! starting specifications
-    initial_mass = 12d0 ! in Msun units
+    initial_mass = 5d0 ! in Msun units
     initial_z = 0.0014 ! initial metal mass fraction
 
   ! when to stop
