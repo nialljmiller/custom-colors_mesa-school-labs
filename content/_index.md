@@ -123,12 +123,8 @@ source ~/.bashrc  # or appropriate file
 echo "MESA_DIR: $MESA_DIR"
 echo "MESA SDK: $MESASDK_ROOT"  # Should be set from previous MESA installations, this DOES NOT need to change. 
 
-# Test MESA environment
-which gfortran  # Should return a path
-gfortran --version  # Check compiler version
-
 # Verify colors module files
-ls $MESA_DIR/colors/
+ls -a $MESA_DIR/colors/
 # Expected output: Makefile, src/, data/, test_suite/, README
 ```
 
@@ -142,10 +138,6 @@ echo "System: $(uname -s)"
 echo "Architecture: $(uname -m)"
 echo "Available memory: $(free -h | grep Mem | awk '{print $2}')"  # Linux
 echo "Available disk space: $(df -h . | tail -1 | awk '{print $4}')"
-
-# Check compiler requirements
-gfortran --version | head -1
-# Should be version 8 or later
 
 # Verify MESA SDK is loaded
 echo $MESASDK_ROOT

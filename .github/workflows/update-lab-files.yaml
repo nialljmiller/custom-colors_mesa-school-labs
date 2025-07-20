@@ -1,4 +1,4 @@
-name: Update Lab Files Archive
+name: Upload Lab Files to Zenodo
 
 on:
   push:
@@ -9,26 +9,23 @@ on:
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
-  update-archive:
+  upload-to-zenodo:
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    - name: Create downloads directory
-      run: mkdir -p static/downloads
-      
     - name: Create lab files archive
       run: |
         cd customcol_lab
-        zip -r ../static/downloads/customcol_lab.zip . -x "*.git*"
+        zip -r ../customcol_lab.zip . -x "*.git*"
         cd ..
         
-    - name: Commit updated archive
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add static/downloads/customcol_lab.zip
-        git diff --staged --quiet || git commit -m "Auto-update lab files archive [skip ci]"
-        git push
+    - name: Upload to Zenodo
+      uses: zenodo/upload-action@v1
+      with:
+        access_token: ${{ secrets.ZENODO_TOKEN }}
+        deposition_id: ${{ secrets.ZENODO_DEPOSITION_ID }}
+        file: customcol_lab.zip
+        publish: true
