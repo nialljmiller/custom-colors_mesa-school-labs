@@ -3,12 +3,9 @@
 
 ---
 ---
-
 {{< cards >}}
-  {{< card link="/downloads/customcol_lab.zip" title="📥 Download Lab Files" subtitle="Download all MESA simulation files, inlists, and Python scripts needed for this lab." >}}
+  {{< card link="https://github.com/nialljmiller/custom-colors_mesa-school-labs/raw/main/customcol_lab.zip" title="📥 Download Lab Files" subtitle="Download all MESA simulation files, inlists, and Python scripts needed for this lab." >}}
 {{< /cards >}}
-
-
 ---
 ## Overview and Learning Objectives
 
@@ -368,33 +365,9 @@ model    age/yr    log_Teff    log_L    Gbp      G        Grp
 
 
 
-
 ## Part 3: Interactive Analysis with Python Tools
 
-### Step 3.1: Real-Time CMD Monitoring
-
-Launch the interactive color-magnitude diagram viewer:
-
-```bash
-cd python_analysis
-python plot_cmd.py
-```
-
-#### Features and Controls
-
-The script automatically detects your photometric system and creates:
-
-- **2D CMD**: Classical color-magnitude diagram with evolutionary track
-- **3D CMD**: Time-evolved diagram showing age progression
-- **Phase Coloring**: MESA's built-in evolutionary phase identification
-
-#### Scientific Analysis Questions
-
-1. **Color Evolution**: How does $G_{BP} - G_{RP}$ change during main sequence evolution?
-2. **Luminosity Function**: What determines the magnitude range?
-3. **Evolutionary Speed**: Where does your star spend most time in CMD space?
-
-### Step 3.2: Spectral Energy Distribution Analysis
+### Step 3.1: Spectral Energy Distribution Analysis
 
 Explore the underlying stellar spectra:
 
@@ -414,7 +387,7 @@ python SED_check.py
 - **Line Effects**: Where do absorption lines affect photometry?
 - **Filter Sensitivity**: Which filters are most sensitive to $T_\text{eff}$ changes?
 
-### Step 3.3: Live Evolution Monitoring
+### Step 3.2: Live Evolution Monitoring
 
 For ongoing simulations, monitor evolution in real-time:
 
