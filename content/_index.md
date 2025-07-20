@@ -205,7 +205,6 @@ Verify each component before proceeding to the lab:
 **Problem**: `./install` fails with compiler errors
 ```bash
 # Solution: Check compiler setup
-gfortran --version
 echo $MESASDK_ROOT
 # Reload MESA SDK if needed
 source $MESASDK_ROOT/bin/mesasdk_init.sh
@@ -214,8 +213,8 @@ source $MESASDK_ROOT/bin/mesasdk_init.sh
 **Problem**: Colors module not found during installation
 ```bash
 # Solution: Verify directory structure
-ls $MESA_DIR/colors/src/
-# Should contain *.f90 files
+ls $MESA_DIR/colors/private/
+# Should contain these files: colors_ctrls_io.f90  hermite_interp.f90  knn_interp.f90  linear_interp.f90  shared_funcs.f90
 ```
 
 #### Data Extraction Issues
@@ -223,21 +222,16 @@ ls $MESA_DIR/colors/src/
 **Problem**: Photometric data extraction fails
 ```bash
 # Solution: Manual extraction with verbose output
-cd $MESA_DIR/colors/data
-tar -xvf colors_data.txz
-# Check for permission issues or disk space
+ls -a $MESA_DIR/colors/data
+#.  ..  colors_data.txz  .extraction_complete  filters  .gitattributes  stellar_models
+
+ls $MESA_DIR/colors/data/filters/GAIA/GAIA/ 
+#GAIA  Gbp_bright.dat  Gbp.dat  Gbp_faint.dat  G.dat  Grp.dat  Grvs.dat
+
+# If this is not there, Check for permission issues or disk space and re-exrtact the zip file
 ```
 
-#### Environment Problems
-
-**Problem**: MESA_DIR not persistent across sessions
-```bash
-# Solution: Verify shell configuration file
-echo $SHELL  # Check your shell
-cat ~/.bashrc | grep MESA_DIR  # Verify export command
-```
-
-For additional support, consult the MESA forum at https://lists.mesastar.org/ or contact the lab instructor.
+For additional support or contact the lab instructor or contact Niall Miller (via mattermost or whatever is easy)
 
 ---
 
@@ -256,7 +250,7 @@ Stellar Parameters    →    Atmosphere Model    →    SED    →    Photometry
 
 #### Stellar Atmosphere Models
 
-MESA uses the **Kurucz 2003** atmosphere model grid covering:
+For this implementation, we are using the **Kurucz 2003** atmosphere model grid covering:
 - **Temperature**: 3,500 K ≤ $T_\text{eff}$ ≤ 50,000 K
 - **Surface Gravity**: 0.0 ≤ $\log g$ ≤ 5.0
 - **Metallicity**: -5.0 ≤ [M/H] ≤ +1.0
@@ -292,25 +286,10 @@ Examine the colors namelist in your `inlist_project`:
 | Parameter | Purpose | Typical Values |
 |-----------|---------|----------------|
 | `use_colors` | Enable photometry calculations | `.true.` |
-| `instrument` | Filter system directory | `'GAIA'`, `'UBVRI'`, `'2MASS'` |
+| `instrument` | Filter system directory | `'GAIA'`|
 | `stellar_atm` | Atmosphere model grid path | `'Kurucz2003all/'` |
 | `distance` | Distance for flux scaling | `3.0857d17` cm (10 pc) |
-| `make_csv` | Output detailed SEDs | `.false.` (performance) |
-
-### Step 1.3: Available Filter Systems
-
-Your installation includes several photometric systems:
-
-```bash
-ls $MESA_DIR/colors/data/filters/
-```
-
-| System | Filters | Wavelength Range | Applications |
-|--------|---------|------------------|--------------|
-| GAIA | $G_{BP}$, $G$, $G_{RP}$ | 0.3-1.0 μm | Parallax surveys |
-| Johnson-Cousins | $U$, $B$, $V$, $R$, $I$ | 0.3-0.9 μm | Classical photometry |
-| 2MASS | $J$, $H$, $K_s$ | 1.2-2.2 μm | Infrared astronomy |
-| SDSS | $u$, $g$, $r$, $i$, $z$ | 0.3-1.0 μm | Large surveys |
+| `make_csv` | Output detailed SEDs as csv files | `.false.` (performance) |
 
 ---
 

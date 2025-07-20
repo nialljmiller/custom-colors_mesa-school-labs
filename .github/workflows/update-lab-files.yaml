@@ -6,7 +6,7 @@ on:
       - 'customcol_lab/**'
     branches:
       - main
-  workflow_dispatch:  # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
   upload-to-zenodo:
@@ -16,16 +16,54 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
+    - name: Install jq
+      run: sudo apt-get update && sudo apt-get install -y jq
+      
     - name: Create lab files archive
       run: |
         cd customcol_lab
         zip -r ../customcol_lab.zip . -x "*.git*"
         cd ..
+        ls -la customcol_lab.zip
         
-    - name: Upload to Zenodo
-      uses: zenodo/upload-action@v1
-      with:
-        access_token: ${{ secrets.ZENODO_TOKEN }}
-        deposition_id: ${{ secrets.ZENODO_DEPOSITION_ID }}
-        file: customcol_lab.zip
-        publish: true
+    - name: Create new Zenodo version
+      run: |
+        response=$(curl -s -X POST \
+          "https://zenodo.org/api/deposit/depositions/${{ secrets.ZENODO_DEPOSITION_ID }}/actions/newversion" \
+          -H "Authorization: Bearer ${{ secrets.ZENODO_TOKEN }}")
+        
+        echo "Response: $response"
+        new_id=$(echo $response | jq -r '.links.latest_draft' | sed 's/.*\///')
+        echo "New deposition ID: $new_id"
+        echo "NEW_DEPOSITION_ID=$new_id" >> $GITHUB_ENV
+        
+    - name: Delete old files
+      run: |
+        files=$(curl -s -X GET \
+          "https://zenodo.org/api/deposit/depositions/${{ env.NEW_DEPOSITION_ID }}/files" \
+          -H "Authorization: Bearer ${{ secrets.ZENODO_TOKEN }}")
+        
+        echo $files | jq -r '.[].id' | while read file_id; do
+          curl -X DELETE \
+            "https://zenodo.org/api/deposit/depositions/${{ env.NEW_DEPOSITION_ID }}/files/$file_id" \
+            -H "Authorization: Bearer ${{ secrets.ZENODO_TOKEN }}"
+        done
+        
+    - name: Upload new file to Zenodo
+      run: |
+        response=$(curl -s -X POST \
+          "https://zenodo.org/api/deposit/depositions/${{ env.NEW_DEPOSITION_ID }}/files" \
+          -H "Authorization: Bearer ${{ secrets.ZENODO_TOKEN }}" \
+          -F "file=@customcol_lab.zip" \
+          -F "name=customcol_lab.zip")
+        
+        echo "Upload response: $response"
+          
+    - name: Publish new version
+      run: |
+        response=$(curl -s -X POST \
+          "https://zenodo.org/api/deposit/depositions/${{ env.NEW_DEPOSITION_ID }}/actions/publish" \
+          -H "Authorization: Bearer ${{ secrets.ZENODO_TOKEN }}")
+        
+        echo "Publish response: $response"
+        echo "✅ Successfully uploaded to Zenodo!"
