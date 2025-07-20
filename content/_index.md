@@ -7,9 +7,8 @@
 {{< /cards >}}
 ---
 
-## Overview and Learning Objectives
+## Overview
 
-Welcome to the MESA Custom Colors lab! 
 This tutorial teaches you to integrate synthetic photometry calculations into stellar evolution models, bridging theoretical stellar physics with observational astronomy.
 
 ### Lab Structure
@@ -62,7 +61,7 @@ ls -la mesa-2025-summerschool-prerelease/
 # Expected: Should see MESA directory structure with colors/ subdirectory
 ```
 
-### Step 0.2: Environment Configuration
+### Step 0.2: Environment Config
 
 #### Update MESA_DIR
 
@@ -107,7 +106,7 @@ echo 'setenv MESA_DIR /path/to/mesa-2025-summerschool-prerelease' >> ~/.cshrc
 source ~/.bashrc  # or appropriate file
 ```
 
-#### Verify Environment Setup
+#### Verify Setup
 
 ```bash
 # Essential checks
@@ -146,7 +145,7 @@ cd $MESA_DIR
 ```
 
 
-#### Verify Successful Installation
+#### Verify Installation
 
 ```bash
 # Check for successful completion
@@ -184,14 +183,15 @@ Some synthetic lightcurve should pop up from pgstar
 Verify each component before proceeding to the lab:
 
 #### System Environment
-- [ ] `$MESA_DIR` points to pre-release version
-- [ ] MESA SDK properly loaded (`$MESASDK_ROOT` set)
-- [ ] Fortran compiler available and compatible
+- `$MESA_DIR` points to pre-release version
+- MESA SDK properly loaded (`$MESASDK_ROOT` set)
+- Fortran compiler available and compatible
 
 #### MESA Installation
-- [ ] `./install` completed successfully (exit code 0)
-- [ ] Core MESA libraries present in `$MESA_DIR/lib/`
-- [ ] Basic test case compiles and runs
+- `./install` completed successfully (exit code 0)
+- Core MESA libraries present in `$MESA_DIR/lib/`
+- Basic test case compiles and runs
+
 
 ### Troubleshooting Common Issues
 
@@ -223,25 +223,25 @@ ls -a $MESA_DIR/colors/data
 ls $MESA_DIR/colors/data/filters/GAIA/GAIA/ 
 #GAIA  Gbp_bright.dat  Gbp.dat  Gbp_faint.dat  G.dat  Grp.dat  Grvs.dat
 
-# If this is not there, Check for permission issues or disk space and re-exrtact the zip file
+# If this is not there, Check for permission issues or disk space and re-install
+
+#If you have issues with data, it is advised to delete the '.extraction_complete' file
 ```
 
 For additional support or contact the lab instructor or contact Niall Miller (via mattermost or whatever is easy)
 
 ---
 
-## Part 1: Understanding Custom Colors Physics
+## Part 1: Understanding Custom Colors
 
 ### The Synthetic Photometry Pipeline
 
 The custom colors module implements a sophisticated pipeline that converts stellar physics into observable quantities:
 
 ```
-Stellar Parameters    →    Atmosphere Model    →    SED    →    Photometry
-(Teff, log g, [M/H])       Interpolation              Convolution    (Magnitudes)
+Stellar Parameters    →    Atmosphere Model    →    SED          →    Photometry
+(Teff, log g, [M/H])       Interpolation            Convolution      (Magnitudes)
 ```
-
-### Step 1.1: Physical Foundation
 
 #### Stellar Atmosphere Models
 
@@ -261,7 +261,7 @@ Where:
 - $S_X(\lambda)$ = filter transmission function
 - $F_\text{Vega}(\lambda)$ = Vega reference spectrum
 
-### Step 1.2: Configuration Parameters
+### Config Params
 
 Examine the colors namelist in your `inlist_project`:
 
@@ -275,8 +275,6 @@ Examine the colors namelist in your `inlist_project`:
    make_csv = .false.     ! Enable for detailed SED output
 /
 ```
-
-#### Parameter Descriptions
 
 | Parameter | Purpose | Typical Values |
 |-----------|---------|----------------|
@@ -299,7 +297,7 @@ Examine the colors namelist in your `inlist_project`:
 
 ---
 
-### Step 2.1: Pre-Execution Configuration Analysis
+### Step 2.1: Config Check
 
 Before initiating model evolution, examine the sophisticated photometric configuration embedded in `inlist_project`:
 
@@ -323,8 +321,6 @@ Before initiating model evolution, examine the sophisticated photometric configu
 / ! end of colors namelist
 ```
 
-#### Technical Architecture Analysis
-
 | Configuration Component | Physical Implementation | Computational Output |
 |------------------------|------------------------|---------------------|
 | **Filter System** | GAIA transmission curves | G, G_BP, G_RP, G_RVS magnitudes |
@@ -334,7 +330,7 @@ Before initiating model evolution, examine the sophisticated photometric configu
 
 ---
 
-### Step 2.2: Model Execution and Initial Monitoring
+### Step 2.2: Model Execution
 
 Execute the stellar evolution calculation with integrated photometric output:
 
@@ -358,11 +354,11 @@ model    age/yr    log_Teff    log_L    Gbp      G        Grp
 
 ---
 
-### Step 2.3: Pgstar Real-Time Visualization Analysis
+### Step 2.3: Pgstar Real-Time Plots
 
 **Observe the pgstar interface** as it displays multi-panel evolutionary diagnostics:
 
-#### Grid1 Window Components
+#### Window 1:
 
 | Panel Position | Diagnostic Function | Physical Interpretation |
 |----------------|-------------------|------------------------|
@@ -372,7 +368,7 @@ model    age/yr    log_Teff    log_L    Gbp      G        Grp
 | **Bottom Left** | Kippenhahn | Temporal convective structure |
 | **Bottom Right** | Mixing Profile | Current internal composition |
 
-#### History_Track2 Window: G-Band Evolution
+#### Window 2: G-Band Evolution
 
 The dedicated photometric window displays:
 - **X-axis**: Stellar age (years)
@@ -388,16 +384,16 @@ The dedicated photometric window displays:
 
 ---
 
-### Step 2.4: Advanced Python Analysis Integration
+### Step 2.4: Python Analysis
 
-**Open a new terminal** while maintaining MESA execution:
+**Open a new terminal** while the MESA model is still running:
 
 ```bash
 # Navigate to analysis directory
 cd python_analysis
 ```
 
-#### Directory Structure Verification
+#### Directory Structure
 
 ```
 python_analysis/
@@ -408,13 +404,13 @@ python_analysis/
 
 ---
 
-## Part 3: Concurrent Spectroscopic and Evolutionary Analysis
+## Part 3: Live Python Plots
 
 ---
 
-### Step 3.1: Real-Time Spectral Evolution Analysis
+### Step 3.1: Real-Time SED
 
-**Execute the SED monitoring tool** while MESA continues evolution:
+**Run the SED tool** while MESA continues evolution:
 
 ```bash
 python SED_check.py
@@ -422,7 +418,7 @@ python SED_check.py
 
 #### Advanced SED Analysis Framework
 
-The `SED_check.py` tool implements sophisticated real-time spectroscopic monitoring:
+The `SED_check.py` tool plots the csv output from custom colors:
 
 ```python
 # Core monitoring parameters
@@ -434,19 +430,7 @@ class SEDChecker:
     ylim = None                        # Automatic flux scaling
 ```
 
-#### Observable Output Analysis
-
-**Monitor the following spectroscopic evolution signatures**:
-
-| Spectral Component | Visualization | Physical Interpretation |
-|-------------------|---------------|------------------------|
-| **Full SED** | Black solid line | Complete stellar spectrum |
-| **GAIA G** | Colored convolution | Broadband photometric response |
-| **GAIA G_BP** | Blue convolution | Short-wavelength sensitivity |
-| **GAIA G_RP** | Red convolution | Long-wavelength response |
-| **Vega Reference** | Dashed lines | Calibration standard |
-
-#### Critical Spectroscopic Features to Monitor
+#### Some Spectroscopic Features to Monitor
 
 **Balmer Jump Evolution** (λ ≈ 3646 Å):
 - **Physical origin**: Hydrogen opacity discontinuity
@@ -460,17 +444,16 @@ class SEDChecker:
 
 ---
 
-### Step 3.2: Multi-Dimensional Evolutionary Monitoring
+### Step 3.2: Evolution Monitoring
 
-**Launch the comprehensive history analyzer**:
+**Launch the python history visualizer**:
 
 ```bash
 python HISTORY_check.py
 ```
 
-#### Four-Panel Analysis Architecture
 
-The `HISTORY_check.py` system provides sophisticated real-time evolutionary tracking:
+The `HISTORY_check.py` system provides real-time evolutionary tracking:
 
 ```python
 # Multi-panel configuration (2×2 grid)
@@ -516,19 +499,19 @@ Move on to Part 4 and/or 5 if you are ready to move on to population analysis us
 
 After completing all previous steps, navigate to the batch runs directory to examine the pre-configured parameter space
 
-You do not actually need to run part 4 if, the plotting scripts in part 5 will still produce some figures with just the output from part 3.
+You do not actually need to run part 4, the plotting scripts in part 5 will still produce some figures with just the output from part 3.
 
 ```bash
 cd batch_runs
 cat ../Lab1.csv
 ```
 
-#### Parameter Grid Overview
+#### Parameter Grid
 The `Lab1.csv` contains a focused parameter study designed for efficient exploration:
 
 | Parameter | Values | Physical Impact |
 |-----------|--------|----------------|
-| **Mass** | 2, 5, 15 M☉ | Evolutionary timescales, final outcomes |
+| **Mass** | 2, 5, 7, 10 M☉ | Evolutionary timescales, final outcomes |
 | **Metallicity** | Z = 0.0014, 0.014 | Opacity, stellar winds |
 | **Overshooting** | None, exponential, step | Convective mixing efficiency |
 
@@ -538,7 +521,7 @@ The `Lab1.csv` contains a focused parameter study designed for efficient explora
 
 ### Step 4.2: Batch Execution Pipeline
 
-Execute the automated workflow:
+Execute the automated workflow (run one by one):
 
 ```bash
 # Verify environment setup
@@ -565,7 +548,7 @@ python 5_construct_output.py
 ## Part 5: More Python Plots!!
 
 
-After batch completion, move to the python analysis folder:
+After batch has finished, move to the python analysis folder:
 
 ```bash
 cd ../python_analysis
@@ -659,10 +642,9 @@ python plot_lc.py
 
 - **3D Multi-Filter Plot**: Multiple photometric bands with wavelength as vertical axis
   - Shows how different filters evolve simultaneously
-  - Up to 5 filters plotted to avoid clutter
 
 **Batch Model Output:**
-- **Comparative Lightcurves**: Multiple evolutionary tracks in magnitude-time space
+- **Comparative Lightcurves**
   - Color coding represents stellar mass
   - Line styles distinguish overshooting prescriptions:
     - Solid lines: No overshooting
@@ -701,7 +683,6 @@ python plot_isochrone.py
 * **Full Tracks**: Continuous paths through color–magnitude–age space
 * **Age Window**: Slider reveals evolutionary progress up to selected age
 * **Viewing Controls**: Rotate and zoom to inspect 3D stellar trajectories
-* **Note**: This is not an isochrone — it visualizes time-dependent **stellar evolution**
 
 **Animated Isochrone Evolution:**
 
@@ -717,13 +698,6 @@ plots/
 ├── isochrone_3d_hr_age_[X.X]Myr.png   # 3D evolutionary snapshots
 └── isochrone_hr_evolution.gif         # Animated sequence of isochrones
 ```
-
-**User Interaction:**
-
-* Prompted to choose between HR diagram axes or photometric CMD
-* Optionally generate 3D evolutionary track visualization
-* Optionally export animated GIF of isochrone sequence
-* Interactive age slider for real-time exploration of stellar population evolution
 
 ---
 
