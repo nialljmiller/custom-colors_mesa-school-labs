@@ -55,22 +55,6 @@ This enables direct comparison between stellar evolution models and observationa
 
 **Important**: This lab uses an unofficial MESA pre-release with the custom colors module. The module will be integrated into the main MESA distribution in a future release **very** soon.
 
-#### Option A: Command Line Download 
-
-```bash
-# Navigate to your MESA installation directory
-cd /path/to/your/mesa/installations/
-
-# Download from Zenodo using wget
-wget https://zenodo.org/records/16092864/files/mesa-2025-summerschool-prerelease.tar.gz
-
-# Alternative: using curl if wget is unavailable
-curl -L -o mesa-2025-summerschool-prerelease.tar.gz \
-  https://zenodo.org/records/16092864/files/mesa-2025-summerschool-prerelease.tar.gz
-```
-
-#### Option B: Browser Download
-
 1. **Visit Zenodo**: Navigate to https://zenodo.org/records/16092864
 2. **Download**: Click on `mesa-2025-summerschool-prerelease.tar.gz`
 
