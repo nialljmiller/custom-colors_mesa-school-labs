@@ -6,6 +6,11 @@
 {{< cards >}}
   {{< card link="https://github.com/nialljmiller/custom-colors_mesa-school-labs/raw/main/customcol_lab.zip" title="📥 Download Lab Files" subtitle="Download all MESA simulation files, inlists, and Python scripts needed for this lab." >}}
 {{< /cards >}}
+
+{{< cards >}}
+  {{< card link="https://zenodo.org/records/16205180/files/customcol_lab.zip" title="📥 Download Lab Files" subtitle="Download all MESA simulation files, inlists, and Python scripts needed for this lab." >}}
+{{< /cards >}}
+
 ---
 ## Overview and Learning Objectives
 
