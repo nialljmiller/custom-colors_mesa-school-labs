@@ -3,15 +3,9 @@
 
 ---
 {{< cards >}}
-  {{< card link="https://github.com/nialljmiller/custom-colors_mesa-school-labs/raw/main/customcol_lab.zip" title="📥 Download Lab Files" subtitle="Download all MESA simulation files, inlists, and Python scripts needed for this lab." >}}
-{{< /cards >}}
-
-
-{{< cards >}}
 {{< card link="https://github.com/nialljmiller/custom-colors_mesa-school-labs/raw/main/customcol_lab.zip" title="📥 Download Lab Files" subtitle="Download all MESA simulation files, inlists, and Python scripts needed for this lab." >}}
 {{< card link="https://zenodo.org/records/16092864" title="🌈 Download MESA Color System" subtitle="Get the mesa-2025-summerschool-prerelease.zip with photometric color calculations from Zenodo." >}}
 {{< /cards >}}
-
 ---
 
 ## Overview
@@ -49,18 +43,20 @@ This enables direct comparison between stellar evolution models and observationa
 
 **Important**: This lab uses an unofficial MESA pre-release with the custom colors module. The module will be integrated into the main MESA distribution in a future release **very** soon.
 
-1. **Visit Zenodo**: Navigate to https://zenodo.org/records/16092864
-2. **Download**: Click on `mesa-2025-summerschool-prerelease.tar.gz`
+Ensure you have downloaded both files from the links above.
+
 
 #### Extract the Archive
 
 **You cant just copy and paste these commands as you need to specify *your* filepath.**
 
 ```bash
-# Navigate to download location (if it is in an awkward place you could move it to 'home' or put it in a directory along with your other MESA install.)
+# Navigate to download location (If it is in an awkward place you could move it to 'home' or put it in a directory along with your other MESA install.)
 cd /path/to/your/mesa/installations/
-# Extract the archive (this may take a few seconds)
-tar -xzf mesa-2025-summerschool-prerelease.tar.gz
+
+# Extract the zip archive
+unzip mesa-2025-summerschool-prerelease.zip
+
 # Verify extraction
 ls -la mesa-2025-summerschool-prerelease/
 # Expected: Should see MESA directory structure with colors/ subdirectory
