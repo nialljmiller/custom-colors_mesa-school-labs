@@ -4,13 +4,10 @@
 ---
 ---
 
-# MESA Custom Colors Lab: Synthetic Photometry in Stellar Evolution
-
 {{< cards >}}
-{{< card link="/downloads/customcol_lab.zip" title="📥 Download Lab Files" >}}
-Download all MESA simulation files, inlists, and Python scripts needed for this lab.
-{{< /card >}}
+  {{< card link="/downloads/customcol_lab.zip" title="📥 Download Lab Files" subtitle="Download all MESA simulation files, inlists, and Python scripts needed for this lab." >}}
 {{< /cards >}}
+
 
 ---
 ## Overview and Learning Objectives
