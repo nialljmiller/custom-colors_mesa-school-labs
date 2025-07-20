@@ -1,26 +1,13 @@
 baseURL = "https://nialljmiller.github.io/custom-colors_mesa-school-labs/"
 languageCode = 'en-us'
-title = 'MESA School Leuven 2025'
-
+title = 'MESA Custom Colors Lab'
 theme = 'Hextra'
 
 [params.search]
 enable = false
 
-[params.navbar.logo]
-path = 'logo.png'
-width = 50
-height = 50
-
-
-[[menu.main]]
-name = 'Custom Colors Readme'
-pageRef = '/customcol_lab/_index.md'
-weight = 1
-
 [markup.goldmark.extensions.passthrough]
 enable = true
-
 [markup.goldmark.extensions.passthrough.delimiters]
 block = [['\[', '\]'], ['$$', '$$']]
 inline = [['$', '$']]
