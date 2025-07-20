@@ -292,59 +292,58 @@ Examine the colors namelist in your `inlist_project`:
 
 ## Part 2: Single Model with Real-Time Photometry
 
-### Step 2.1: Model Configuration
+### Learning Objectives
+- Configure and analyze MESA's colors module for synthetic photometry
+- Execute systematic real-time monitoring of stellar evolution
+- Integrate pgstar visualization with Python-based spectroscopic analysis
+- Develop proficiency in multi-terminal computational astrophysics workflows
 
-#### Enable Evolutionary Phase Tracking
+---
 
-Edit your `inlist_project` to include photometric evolution diagnostics:
+### Step 2.1: Pre-Execution Configuration Analysis
 
-```fortran
-! In &star_job namelist
-history_columns_file = 'history_columns.list'
-
-! In &controls namelist
-photo_interval = 50        ! Frequency of detailed output
-```
-
-#### Configure History Output
-
-Edit `history_columns.list` around line 942:
+Before initiating model evolution, examine the sophisticated photometric configuration embedded in `inlist_project`:
 
 ```fortran
-! Add this line for phase identification
-phase_of_evolution     ! Integer mapping to evolution phases
-
-! Ensure these are included
-model_number
-star_age
-log_dt
-log_Teff
-log_L
-log_g
+&colors
+      ! Enable synthetic photometry during evolution
+      use_colors = .true.
+      
+      ! GAIA photometric system specification
+      instrument = '/colors/data/filters/GAIA/GAIA'
+      
+      ! Vega zero-point calibration spectrum
+      vega_sed = '/colors/data/stellar_models/vega_flam.csv'
+      
+      ! Kurucz 2003 stellar atmosphere model grid
+      stellar_atm = '/colors/data/stellar_models/Kurucz2003all/'
+      
+      ! Observational parameters
+      distance = 3.0857d16         ! 1 parsec in cm
+      make_csv = .true.            ! Enable detailed SED output
+/ ! end of colors namelist
 ```
 
-### Step 2.2: Understanding Pgstar Integration
+#### Technical Architecture Analysis
 
-As pgstar can plot whatever is in the history file, It is easy to plot real time lightcurves.
-The following should already be in your inlist_pgstar:
+| Configuration Component | Physical Implementation | Computational Output |
+|------------------------|------------------------|---------------------|
+| **Filter System** | GAIA transmission curves | G, G_BP, G_RP, G_RVS magnitudes |
+| **Atmosphere Grid** | Kurucz T_eff: 3500-50000 K | Interpolated surface flux |
+| **Calibration** | Vega spectrum reference | Magnitude zero-point: 0.0 |
+| **Distance Scaling** | $m - M = 5\log_{10}(d/10\text{pc})$ | Apparent magnitude conversion |
 
-```fortran
-  ! G band light curve
-  History_Track2_win_flag = .true.
-  History_Track2_xname = 'star_age'
-  History_Track2_yname = 'G'
-  History_Track2_title = 'G Light Curve'
-  History_Track2_xaxis_label = 'Age (yr)'
-  History_Track2_yaxis_label = 'G mag'
-```
+---
 
-### Step 2.3: Run the Model
+### Step 2.2: Model Execution and Initial Monitoring
+
+Execute the stellar evolution calculation with integrated photometric output:
 
 ```bash
 ./rn
 ```
 
-#### Expected Terminal Output
+#### Expected Terminal Output Sequence
 
 ```
 Loading stellar atmosphere models from data/stellar_models/Kurucz2003all/
@@ -358,206 +357,378 @@ model    age/yr    log_Teff    log_L    Gbp      G        Grp
   100   2.501E+06     3.762   -0.019   4.826   4.717   4.594
 ```
 
-#### Pgstar Windows to Monitor
+---
 
-1. **Light curve**: Gaia G band light curve. 
-2. **Kippenhahn Diagram**: Internal structure evolution
+### Step 2.3: Pgstar Real-Time Visualization Analysis
 
+**Observe the pgstar interface** as it displays multi-panel evolutionary diagnostics:
 
+#### Grid1 Window Components
 
-## Part 3: Interactive Analysis with Python Tools
+| Panel Position | Diagnostic Function | Physical Interpretation |
+|----------------|-------------------|------------------------|
+| **Top Span** | Text Summary | Real-time parameter monitoring |
+| **Middle Left** | HR Diagram | L vs T_eff evolutionary track |
+| **Middle Right** | History Panels | Convective core mass evolution |
+| **Bottom Left** | Kippenhahn | Temporal convective structure |
+| **Bottom Right** | Mixing Profile | Current internal composition |
 
-### Step 3.1: Spectral Energy Distribution Analysis
+#### History_Track2 Window: G-Band Evolution
 
-Explore the underlying stellar spectra:
+The dedicated photometric window displays:
+- **X-axis**: Stellar age (years)
+- **Y-axis**: GAIA G magnitude
+- **Real-time updates**: Magnitude evolution during stellar phases
+- **Physical significance**: Direct connection between internal physics and observables
+
+**Key observation targets during pgstar monitoring**:
+1. **Pre-main sequence contraction**: Rapid T_eff and L evolution
+2. **ZAMS arrival**: Stabilization of nuclear burning
+3. **Main sequence evolution**: Gradual photometric changes
+4. **Convective core development**: Mass coordinate evolution
+
+---
+
+### Step 2.4: Advanced Python Analysis Integration
+
+**Open a new terminal** while maintaining MESA execution:
+
+```bash
+# Navigate to analysis directory
+cd python_analysis
+```
+
+#### Directory Structure Verification
+
+```
+python_analysis/
+├── SED_check.py           # Real-time spectroscopic analysis
+├── HISTORY_check.py       # Multi-panel evolutionary monitoring
+└── [additional tools]     # Extended analysis capabilities
+```
+
+---
+
+## Part 3: Concurrent Spectroscopic and Evolutionary Analysis
+
+---
+
+### Step 3.1: Real-Time Spectral Evolution Analysis
+
+**Execute the SED monitoring tool** while MESA continues evolution:
 
 ```bash
 python SED_check.py
 ```
 
-#### Interactive Features
+#### Advanced SED Analysis Framework
 
-- **Wavelength Range**: Zoom into specific spectral regions
-- **Filter Overlay**: Visualize how filters sample the spectrum
-- **Time Evolution**: See how the SED shape changes
+The `SED_check.py` tool implements sophisticated real-time spectroscopic monitoring:
 
-#### Physical Interpretation
+```python
+# Core monitoring parameters
+class SEDChecker:
+    wavelength_range = [600, 10000]    # Optical/near-IR coverage (Å)
+    refresh_interval = 1               # Update frequency (seconds)
+    directory = "../LOGS/SED/"         # MESA SED output location
+    xlim = [600, 10000]               # Spectral window
+    ylim = None                        # Automatic flux scaling
+```
 
-- **Blackbody Comparison**: How does the stellar SED differ from a perfect blackbody?
-- **Line Effects**: Where do absorption lines affect photometry?
-- **Filter Sensitivity**: Which filters are most sensitive to $T_\text{eff}$ changes?
+#### Observable Output Analysis
 
-### Step 3.2: Live Evolution Monitoring
+**Monitor the following spectroscopic evolution signatures**:
 
-For ongoing simulations, monitor evolution in real-time:
+| Spectral Component | Visualization | Physical Interpretation |
+|-------------------|---------------|------------------------|
+| **Full SED** | Black solid line | Complete stellar spectrum |
+| **GAIA G** | Colored convolution | Broadband photometric response |
+| **GAIA G_BP** | Blue convolution | Short-wavelength sensitivity |
+| **GAIA G_RP** | Red convolution | Long-wavelength response |
+| **Vega Reference** | Dashed lines | Calibration standard |
+
+#### Critical Spectroscopic Features to Monitor
+
+**Balmer Jump Evolution** (λ ≈ 3646 Å):
+- **Physical origin**: Hydrogen opacity discontinuity
+- **Evolutionary signature**: Varies with surface gravity and temperature
+- **Photometric impact**: Affects blue magnitude calibrations
+
+**Paschen Continuum** (λ > 8200 Å):
+- **Physical origin**: Near-infrared hydrogen opacity
+- **Temperature sensitivity**: Strong T_eff dependence
+- **Color index impact**: Drives red photometric evolution
+
+---
+
+### Step 3.2: Multi-Dimensional Evolutionary Monitoring
+
+**Launch the comprehensive history analyzer**:
 
 ```bash
-# Terminal 1: Run MESA
-./rn
-
-# Terminal 2: Live monitoring
-cd python_analysis
 python HISTORY_check.py
 ```
 
-#### Live Analysis Capabilities
+#### Four-Panel Analysis Architecture
 
-- **Automatic Updates**: Plots refresh as new data becomes available
-- **Multi-Panel Display**: Simultaneous HR diagram and CMD views
-- **Phase Identification**: Color-coded evolutionary phases
-- **Export Functionality**: Save key evolutionary moments
+The `HISTORY_check.py` system provides sophisticated real-time evolutionary tracking:
 
+```python
+# Multi-panel configuration (2×2 grid)
+panel_layout = {
+    'top_left': 'Color_Magnitude_Diagram',     # Observational plane
+    'top_right': 'Classical_HR_Diagram',       # Physical parameter space
+    'bottom_left': 'Color_Evolution',          # Temporal color analysis
+    'bottom_right': 'Multi_Band_Lightcurves'   # Filter-specific evolution
+}
+```
 
+#### Panel-Specific Analysis Guidelines
 
+**Top-Left: Color-Magnitude Diagram**
+```python
+# Automated filter detection and color construction
+if 'Gbp' in filter_columns and 'Grp' in filter_columns:
+    color_index = md.Gbp - md.Grp      # GAIA color
+    magnitude = md.G                    # GAIA magnitude
+```
+
+**Top-Right: Classical HR Diagram**
+- T_eff vs Log L with inverted temperature axis
+- Direct stellar physics visualization
+
+**Bottom-Left: Color Evolution**
+- Temporal color index analysis: $\frac{d(\text{color})}{dt}$
+
+**Bottom-Right: Multi-Band Light Curves**
+- Simultaneous G, G_BP, G_RP evolution
 
 ---
+You are free to change the parameters of the inlist and re run this set up.
 
-## Part 4: Batch Models and Parameter Studies
+Move on to Part 4 and/or 5 if you are ready to move on to population analysis using cutom colors.
 
-### Step 4.1: Understanding the Parameter Grid
+---
+---
 
-Systematic studies require exploring parameter space efficiently. Examine the provided batch setup:
+## Part 4: Batch Models and Parameter Studies (OPTIONAL)
+
+### Step 4.1: Preparing the Parameter Grid
+
+After completing all previous steps, navigate to the batch runs directory to examine the pre-configured parameter space
+
+You do not actually need to run part 4 if, the plotting scripts in part 5 will still produce some figures with just the output from part 3.
 
 ```bash
 cd batch_runs
-ls batch_inlists/ | head -10
-
-# Expected output:
-inlist_M15_Z0140_exponential_fov010
-inlist_M15_Z0140_exponential_fov020
-inlist_M15_Z0140_step_fov010
-inlist_M15_Z0140_noovs
-inlist_M2_Z0014_exponential_fov010
-...
+cat ../Lab1.csv
 ```
 
-#### Parameter Grid Design
+#### Parameter Grid Overview
+The `Lab1.csv` contains a focused parameter study designed for efficient exploration:
 
-| Parameter | Values | Physical Significance |
-|-----------|--------|----------------------|
-| **Mass** | 2, 5, 15, 30 M☉ | Main sequence lifetime, final fate |
-| **Metallicity** | Z = 0.0014, 0.0140 | Opacity effects, stellar winds |
+| Parameter | Values | Physical Impact |
+|-----------|--------|----------------|
+| **Mass** | 2, 5, 15 M☉ | Evolutionary timescales, final outcomes |
+| **Metallicity** | Z = 0.0014, 0.014 | Opacity, stellar winds |
 | **Overshooting** | None, exponential, step | Convective mixing efficiency |
-| **$f_\text{ov}$** | 0.01, 0.02, 0.03 | Overshooting parameter |
 
-### Step 4.2: Running Batch Photometry
+**Optional**: Edit `Lab1.csv` to customize your parameter space:
+- Add/remove mass values, metallicity values, overshooting parameters...
 
-Execute the automated batch pipeline:
+
+### Step 4.2: Batch Execution Pipeline
+
+Execute the automated workflow:
 
 ```bash
-# Verify dependencies
+# Verify environment setup
 python 0_dependency_check.py
 
-# Generate inlists with colors configuration
-python 1_make_batch.py
+# Generate individual inlists from CSV
+python 1_make_batch.py ../Lab1.csv
 
-# Verify all configurations
-python 2_verify_inlists.py
+# Validate inlist creation
+python 2_verify_inlists.py ../Lab1.csv
 
-# Execute the full grid (computationally intensive!)
+# Execute full parameter grid
 python 3_run_batch.py
 
-# Validate completion
-python 4_verify_outlists.py
+# Check run completion status
+python 4_verify_outlists.py ../Lab1.csv
 
-# Collect photometric data
+# Extract photometric data
 python 5_construct_output.py
 ```
 
-#### Performance Considerations
-
-| Grid Size | Estimated Time | Recommendations |
-|-----------|----------------|-----------------|
-| 4 models | 1-4 hours | Initial testing |
-| 16 models | 4-12 hours | Partial parameter study |
-| 64 models | 1-3 days | Full grid (varies by system) |
-
-### Step 4.3: Batch Analysis and Interpretation
-
-#### Mass Sequence Analysis
-
-```bash
-python plot_cmd.py  # Now includes batch mode
-```
-
-Creates comparative visualizations:
-- **Mass-dependent tracks**: Different evolutionary paths
-- **Metallicity effects**: Systematic shifts in CMD position
-- **Overshooting impact**: Main sequence width variations
-
-#### Scientific Questions for Investigation
-
-1. **Mass-Luminosity Relation**: How does photometry reveal the M-L relationship?
-2. **Metallicity Degeneracy**: Can colors break age-metallicity degeneracy?
-3. **Convective Efficiency**: What photometric signatures indicate overshooting?
-
 ---
 
-## Part 5: Advanced Analysis and Research Applications
+## Part 5: More Python Plots!!
 
-### Step 5.1: Color-Color Diagrams
 
-Multi-dimensional color analysis reveals subtle evolutionary effects:
+After batch completion, move to the python analysis folder:
 
+```bash
+cd ../python_analysis
+ls *.py
+```
+
+
+### Color Magnitude Diagram
+```bash
+python plot_cmd.py
+```
+
+**Single Model Output:**
+- **2D CMD Plot**: Shows evolutionary track colored by central hydrogen abundance (center_h1)
+  - Red circle: Main sequence start
+  - Blue square: Final evolutionary state
+  - Color progression shows hydrogen depletion over time
+  
+- **3D CMD Plot**: Same track with age as vertical axis
+  - Green dot: Zero-age main sequence
+  - Red square: Terminal point
+  - Trajectory shows how color and magnitude evolve simultaneously
+
+**Batch Model Output:**
+- **Comparative 2D CMD**: Multiple evolutionary tracks overlaid
+  - Different colors represent different stellar masses
+  - Line styles distinguish overshooting prescriptions:
+    - Dashed lines: No overshooting
+    - Solid lines: Exponential overshooting  
+    - Dotted lines: Step overshooting
+
+- **3D Batch Visualization**: All tracks in age-color-magnitude space
+
+**Generated Files:**
+```
+plots/
+├── cmd_gaia_center_h1.png     # Single model 2D
+├── cmd_3d_gaia_age.png        # Single model 3D
+├── batch_cmd_gaia.png         # Batch 2D comparison
+└── batch_cmd_3d_gaia_age.png  # Batch 3D comparison
+```
+
+
+### Color-Color Plots
 ```bash
 python plot_colorcolor.py
 ```
 
-#### Advanced Diagnostics
+**Single Model Output:**
+- **2D Color-Color Plot**: GAIA (Gbp-Grp) vs (Grp-Grvs) colored by central hydrogen abundance
+  - Red circle: Evolutionary start point
+  - Blue square: Final state
+  - Track reveals temperature-metallicity degeneracies
 
-- **Temperature Sensitivity**: $(G_{BP} - G)$ vs $(G - G_{RP})$
-- **Metallicity Indicators**: Color combinations sensitive to [M/H]
-- **Evolutionary Phase Mapping**: Distinct regions for different phases
+- **3D Color-Color Plot**: Same colors with age as vertical axis
+  - Green dot: Zero-age main sequence
+  - Red square: Terminal point
+  - Shows color evolution timing
 
-### Step 5.2: Isochrone Construction
+**Batch Model Output:**
+- **Comparative 2D Plots**: Multiple evolutionary tracks in color-color space
+  - Color coding represents stellar mass
+  - Same as before, line styles distinguish overshooting prescriptions:
+    - Solid lines: No overshooting
+    - Dashed lines: Exponential overshooting
+    - Dash-dot lines: Step overshooting
 
-Generate theoretical stellar populations:
+- **3D Batch Visualization**: All tracks with effective temperature as vertical axis
 
-```bash
-python plot_isochrone.py
+**Generated Files:**
+```
+plots/
+├── colorcolor_gaia_center_h1.png     # Single model 2D
+├── colorcolor_3d_gaia_center_h1.png  # Single model 3D
+├── batch_colorcolor_gaia_mass.png    # Batch 2D comparison
+└── batch_colorcolor_3d_gaia_mass.png # Batch 3D comparison
 ```
 
-#### Interactive Features
 
-- **Age Slider**: Explore population evolution
-- **3D Visualization**: Age-color-magnitude relationships
-- **Animation Export**: Create evolutionary movies
-
-#### Research Applications
-
-- **Cluster Dating**: Compare with observed CMDs
-- **Star Formation History**: Constrain stellar populations
-- **Distance Determination**: Isochrone fitting techniques
-
-### Step 5.3: Lightcurve Analysis
-
-Time-domain photometry for variable stars:
+### Light Curves
 
 ```bash
 python plot_lc.py
 ```
 
-#### Applications
+**Single Model Output:**
+- **2D Lightcurve**: G-band magnitude vs age colored by central hydrogen abundance
+  - Red circle: Evolutionary start point
+  - Blue square: Final state  
+  - Inverted y-axis (fainter stars higher)
 
-- **Pulsation Studies**: Intrinsic variability
-- **Eclipse Modeling**: Binary star systems
-- **Evolutionary Timescales**: Rapid transition phases
+- **3D Multi-Filter Plot**: Multiple photometric bands with wavelength as vertical axis
+  - Shows how different filters evolve simultaneously
+  - Up to 5 filters plotted to avoid clutter
 
-### Step 5.4: Physics-Photometry Correlations
+**Batch Model Output:**
+- **Comparative Lightcurves**: Multiple evolutionary tracks in magnitude-time space
+  - Color coding represents stellar mass
+  - Line styles distinguish overshooting prescriptions:
+    - Solid lines: No overshooting
+    - Dashed lines: Exponential overshooting
+    - Dash-dot lines: Step overshooting
 
-Connect internal physics to observable properties:
+- **3D Batch Visualization**: All tracks with effective temperature as vertical axis
+  - Reveals temperature-brightness evolution relationships
 
-```bash
-python colors_physics.py
+**Generated Files:**
+```
+plots/
+├── lightcurve_g_center_h1.png           # Single model 2D
+├── lightcurve_3d_multifilter_center_h1.png # Single model 3D
+├── batch_lightcurve_g_mass.png          # Batch 2D comparison  
+└── batch_lightcurve_3d_g_mass.png       # Batch 3D comparison
 ```
 
-#### Correlation Analysis
 
-- **Core Hydrogen vs Color**: Evolutionary phase indicators
-- **Convective Core Mass**: Relationship to photometric properties
-- **Surface Gravity**: Connection to magnitude evolution
+### Isochrones and Tracks
+
+```bash
+python plot_isochrone.py
+```
+
+**Interactive 2D Isochrone Plot:**
+
+* **Age Slider**: Drag to view a population snapshot at a specific stellar age
+* **Stellar Positions**: Interpolated from evolutionary tracks at the selected age
+* **Color Coding**: Different stellar masses shown in distinct colors
+* **Marker Shapes**: Circle (no overshooting), triangle (exponential), square (step)
+* **Note**: Each frame represents a proper **isochrone** — i.e., a constant-age cut through all models
+
+**Interactive 3D Evolutionary Tracks:**
+
+* **Full Tracks**: Continuous paths through color–magnitude–age space
+* **Age Window**: Slider reveals evolutionary progress up to selected age
+* **Viewing Controls**: Rotate and zoom to inspect 3D stellar trajectories
+* **Note**: This is not an isochrone — it visualizes time-dependent **stellar evolution**
+
+**Animated Isochrone Evolution:**
+
+* **GIF Export**: Sequence of isochrones across time rendered as animation
+* **Population Aging**: Observe the changing CMD/HRD morphology with age
+* **Note**: Each frame is a snapshot isochrone; animation shows their progression
+
+**Generated Files:**
+
+```
+plots/
+├── isochrone_hr_age_[X.X]Myr.png      # 2D isochrones at key ages
+├── isochrone_3d_hr_age_[X.X]Myr.png   # 3D evolutionary snapshots
+└── isochrone_hr_evolution.gif         # Animated sequence of isochrones
+```
+
+**User Interaction:**
+
+* Prompted to choose between HR diagram axes or photometric CMD
+* Optionally generate 3D evolutionary track visualization
+* Optionally export animated GIF of isochrone sequence
+* Interactive age slider for real-time exploration of stellar population evolution
 
 ---
+
+
 
 ## Troubleshooting and FAQs
 
@@ -570,93 +741,19 @@ echo $MESA_DIR
 source ~/.bashrc  # Reload shell configuration
 ```
 
-**Problem**: Missing stellar atmosphere data
-```bash
-# Solution: Manual data extraction
-cd $MESA_DIR/colors/data
-tar -xf colors_data.txz
-```
 
-### Runtime Errors
-
-**Problem**: "Interpolation outside grid bounds"
-- **Cause**: Stellar parameters exceed atmosphere model coverage
-- **Solution**: Check $T_\text{eff}$, $\log g$, [M/H] ranges in terminal output
 
 **Problem**: Python plotting failures
+
+Ensure each of the require python packages are installed 
+
 ```bash
 # Install required packages
-pip install mesa_reader matplotlib numpy scipy pandas
-```
-
-### Performance Optimization
-
-| Issue | Solution | Impact |
-|-------|----------|--------|
-| Slow SED calculation | Set `make_csv = .false.` | 50% speedup |
-| Memory usage | Reduce `photo_interval` | Lower memory |
-| Grid size | Start with subset | Faster testing |
-
-### Advanced Configuration
-
-#### Custom Filter Systems
-
-Add new photometric systems:
-```bash
-# Create filter directory
-mkdir $MESA_DIR/colors/data/filters/CUSTOM/
-
-# Add transmission curves (wavelength, transmission)
-# Format: ASCII files with .dat extension
-```
-
-#### Atmosphere Model Alternatives
-
-Replace Kurucz models with PHOENIX or MARCS:
-- Update `stellar_atm` parameter
-- Ensure consistent metallicity scales
-- Validate interpolation accuracy
-
----
-
-## Appendix: Quick Reference
-
-### Essential Commands
-
-```bash
-# Installation
-export MESA_DIR=/path/to/prerelease
-./install
-
-# Single model
-./rn
-
-# Batch processing
-python 1_make_batch.py
-python 3_run_batch.py
-
-# Analysis
-python plot_cmd.py
-python plot_colorcolor.py
-python plot_isochrone.py
-```
-
-### Key Configuration Parameters
-
-```fortran
-&colors
-   use_colors = .true.
-   instrument = 'data/filters/GAIA/GAIA'
-   stellar_atm = 'data/stellar_models/Kurucz2003all/'
-   distance = 3.0857d17
-   make_csv = .false.
-/
-```
-
-### Python Dependencies
-
-```bash
-pip install mesa_reader matplotlib numpy scipy pandas
+pip install mesa_reader
+pip install matplotlib 
+pip install numpy 
+pip install scipy 
+pip install pandas
 ```
 
 ### Help
