@@ -328,17 +328,17 @@ log_g
 
 ### Step 2.2: Understanding Pgstar Integration
 
-The custom colors module integrates with pgstar for real-time visualization:
+As pgstar can plot whatever is in the history file, It is easy to plot real time lightcurves.
+The following should already be in your inlist_pgstar:
 
 ```fortran
-! In &pgstar namelist
-Kipp_win_flag = .true.
-Kipp_win_width = 12
-Kipp_win_aspect_ratio = 0.75
-
-! Enable custom colors plots
-History_Panels1_win_flag = .true.
-History_Panels1_title = 'Photometric Evolution'
+  ! G band light curve
+  History_Track2_win_flag = .true.
+  History_Track2_xname = 'star_age'
+  History_Track2_yname = 'G'
+  History_Track2_title = 'G Light Curve'
+  History_Track2_xaxis_label = 'Age (yr)'
+  History_Track2_yaxis_label = 'G mag'
 ```
 
 ### Step 2.3: Run the Model
@@ -363,27 +363,11 @@ model    age/yr    log_Teff    log_L    Gbp      G        Grp
 
 #### Pgstar Windows to Monitor
 
-1. **HR Diagram**: Track evolution in fundamental parameter space
-2. **Photometric Panel**: Real-time color-magnitude diagram
-3. **Kippenhahn Diagram**: Internal structure evolution
+1. **Light curve**: Gaia G band light curve. 
+2. **Kippenhahn Diagram**: Internal structure evolution
 
-### Step 2.4: Physical Interpretation
 
-#### Main Sequence Evolution
 
-During core hydrogen burning, observe:
-- **Slow color evolution**: Colors change gradually as $T_\text{eff}$ decreases
-- **Luminosity increase**: Main sequence brightening due to core evolution
-- **Filter dependence**: Blue filters show larger magnitude changes
-
-#### Post-Main Sequence Changes
-
-Watch for rapid transitions:
-- **Subgiant branch**: Accelerated reddening
-- **Red giant branch**: Dramatic magnitude changes
-- **Helium flash**: Potential photometric signatures
-
----
 
 ## Part 3: Interactive Analysis with Python Tools
 
