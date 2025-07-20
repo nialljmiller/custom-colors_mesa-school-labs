@@ -2,16 +2,11 @@
 ## Complete Summer School Guide
 
 ---
----
 {{< cards >}}
   {{< card link="https://github.com/nialljmiller/custom-colors_mesa-school-labs/raw/main/customcol_lab.zip" title="📥 Download Lab Files" subtitle="Download all MESA simulation files, inlists, and Python scripts needed for this lab." >}}
 {{< /cards >}}
-
-{{< cards >}}
-  {{< card link="https://zenodo.org/records/16205180/files/lab1.zip" title="📥 Download Lab Files" subtitle="Download all MESA simulation files, inlists, and Python scripts needed for this lab." >}}
-{{< /cards >}}
-
 ---
+
 ## Overview and Learning Objectives
 
 Welcome to the MESA Custom Colors lab! 
@@ -35,7 +30,6 @@ By completing this lab, you will be able to:
 | 2 | Single Model Analysis |
 | 3 | Interactive Visualization |
 | 4 | Batch Model Studies |
-| 5 | Advanced Analysis |
 
 ---
 
@@ -289,6 +283,7 @@ Examine the colors namelist in your `inlist_project`:
 |-----------|---------|----------------|
 | `use_colors` | Enable photometry calculations | `.true.` |
 | `instrument` | Filter system directory | `'GAIA'`|
+| `vega_sed` | Vega calibration file | `vega_flam.csv` |
 | `stellar_atm` | Atmosphere model grid path | `'Kurucz2003all/'` |
 | `distance` | Distance for flux scaling | `3.0857d17` cm (10 pc) |
 | `make_csv` | Output detailed SEDs as csv files | `.false.` (performance) |
@@ -411,6 +406,9 @@ python HISTORY_check.py
 - **Multi-Panel Display**: Simultaneous HR diagram and CMD views
 - **Phase Identification**: Color-coded evolutionary phases
 - **Export Functionality**: Save key evolutionary moments
+
+
+
 
 ---
 
