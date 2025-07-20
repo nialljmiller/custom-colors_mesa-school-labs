@@ -8,7 +8,7 @@
 {{< /cards >}}
 
 {{< cards >}}
-  {{< card link="https://zenodo.org/records/16205180/files/customcol_lab.zip" title="📥 Download Lab Files" subtitle="Download all MESA simulation files, inlists, and Python scripts needed for this lab." >}}
+  {{< card link="https://zenodo.org/records/16205180/files/lab1.zip" title="📥 Download Lab Files" subtitle="Download all MESA simulation files, inlists, and Python scripts needed for this lab." >}}
 {{< /cards >}}
 
 ---
