@@ -352,19 +352,6 @@ Execute the stellar evolution calculation with integrated photometric output:
 ./rn
 ```
 
-#### Expected Terminal Output Sequence
-
-```
-Loading stellar atmosphere models from data/stellar_models/Kurucz2003all/
-Model grid spans: Teff [3500-50000], log_g [0.0-5.0], [M/H] [-5.0,+1.0]
-Using GAIA photometric system: Gbp, G, Grp
-Computing synthetic photometry at each timestep...
-
-model    age/yr    log_Teff    log_L    Gbp      G        Grp
-    1   0.000E+00     3.764   -0.023   4.832   4.721   4.598
-   50   1.234E+06     3.763   -0.021   4.829   4.719   4.596
-  100   2.501E+06     3.762   -0.019   4.826   4.717   4.594
-```
 
 ---
 
