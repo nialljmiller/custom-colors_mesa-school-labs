@@ -684,9 +684,9 @@ python plot_isochrone.py
 
 ```
 plots/
-├── isochrone_hr_age_[X.X]Myr.png      # 2D isochrones at key ages
+├── isochrone_hr_age_[X.X]Myr.png      # 2D evolution plot
 ├── isochrone_3d_hr_age_[X.X]Myr.png   # 3D evolutionary snapshots
-└── isochrone_hr_evolution.gif         # Animated sequence of isochrones
+└── isochrone_hr_evolution.gif         # Animation of population evolution
 ```
 
 ---
