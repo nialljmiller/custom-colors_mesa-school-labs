@@ -409,6 +409,8 @@ python_analysis/
 
 ### Step 3.1: Real-Time SED
 
+You **MUST** have set ```make_csv = .true.``` for SED_check.py to work.
+
 **Run the SED tool** while MESA continues evolution:
 
 ```bash
