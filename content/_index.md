@@ -117,8 +117,9 @@ echo "MESA_DIR: $MESA_DIR"
 echo "MESA SDK: $MESASDK_ROOT"  # Should be set from previous MESA installations, this DOES NOT need to change. 
 
 # Verify colors module files
-ls -a $MESA_DIR/colors/private
-# You should see: Makefile, src/, data/, and test_suite/.
+ls $MESA_DIR/colors/private
+# You should see: colors_ctrls_io.f90  hermite_interp.f90  knn_interp.f90  linear_interp.f90  shared_funcs.f90
+#These are new functions that the colors module uses. 
 ```
 
 ### Step 0.3: Install MESA with Custom Colors
