@@ -2,6 +2,8 @@
 ## Complete Summer School Guide
 
 ---
+## Download links
+
 {{< cards >}}
 {{< card link="https://github.com/nialljmiller/custom-colors_mesa-school-labs/raw/main/customcol_lab.zip" title="Download Lab Files" subtitle="Download all MESA simulation files, inlists, and Python scripts needed for this lab." >}}
 {{< card link="https://zenodo.org/records/16092864" title="Download MESA Color System" subtitle="Get the mesa-2025-summerschool-prerelease.zip with photometric color calculations from Zenodo." >}}
