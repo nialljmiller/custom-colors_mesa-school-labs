@@ -150,8 +150,7 @@ cd $MESA_DIR
 
 ```bash
 # Check for successful completion
-echo "Installation status: $?"  # Should be 0
-ls $MESA_DIR/lib/  # Should contain many .a library files
+ls $MESA_DIR/colors/data/filters/GAIA/GAIA #There should be a bunch of filter files G.dat, Gbp.dat ...
 
 # Test basic MESA functionality
 cd $MESA_DIR/star/test_suite/custom_colors
@@ -269,11 +268,11 @@ Examine the colors namelist in your `inlist_project`:
 ```fortran
 &colors
    use_colors = .true.
-   instrument = 'data/filters/GAIA/GAIA'
-   vega_sed = 'data/stellar_models/vega_flam.csv'  
-   stellar_atm = 'data/stellar_models/Kurucz2003all/'
+   instrument = '/colors/data/filters/GAIA/GAIA'
+   vega_sed = '/colors/data/stellar_models/vega_flam.csv'  
+   stellar_atm = '/colors/data/stellar_models/Kurucz2003all/'
    distance = 3.0857d17  ! 10 parsecs for absolute magnitudes
-   make_csv = .false.     ! Enable for detailed SED output
+   make_csv = .false.     ! You can enable this for SED output
 /
 ```
 
@@ -317,7 +316,7 @@ Before initiating model evolution, examine the sophisticated photometric configu
       stellar_atm = '/colors/data/stellar_models/Kurucz2003all/'
       
       ! Observational parameters
-      distance = 3.0857d16         ! 1 parsec in cm
+      distance = 3.0857d17         ! 10 parsec in cm
       make_csv = .true.            ! Enable detailed SED output
 / ! end of colors namelist
 ```
@@ -348,7 +347,7 @@ batch_runs  clean  completed_inlists  inlist  inlist_pgstar  inlist_project  LOG
 ```
 
 
-### Step 2.2: Model Execution
+### Step 2.3: Model Execution
 
 Execute the stellar evolution calculation with integrated photometric output:
 
@@ -374,7 +373,7 @@ model    age/yr    log_Teff    log_L    Gbp      G        Grp
 
 ---
 
-### Step 2.3: Pgstar Real-Time Plots
+### Step 2.4: Pgstar Real-Time Plots
 
 **Observe the pgstar interface** as it displays multi-panel evolutionary diagnostics:
 
@@ -404,7 +403,7 @@ The dedicated photometric window displays:
 
 ---
 
-### Step 2.4: Python Analysis
+### Step 2.5: Python Analysis
 
 **Open a new terminal** while the MESA model is still running:
 
