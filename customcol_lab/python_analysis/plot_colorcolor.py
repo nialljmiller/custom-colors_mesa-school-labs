@@ -47,6 +47,8 @@ def setup_colorcolor_params(md, filter_columns):
     color2_label = "Grp - Grvs"
     system = "GAIA"
     print("Using GAIA color-color: (Gbp-Grp) vs (Grp-Grvs)")
+    return color1, color2, color1_label, color2_label, system
+    
       
 def get_physics_param(md, param_name):
     """Get physics parameter for color coding - focused on most informative recorded columns."""
