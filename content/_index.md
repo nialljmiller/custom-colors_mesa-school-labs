@@ -87,25 +87,27 @@ If you are struggling or unsure, ask a TA.
 
 #### Make Changes Persistent (optional)
 
-The export command is temporary and will not persist through multiple terminal windows. You can save these changes by adding/changing them in your ".[shell]rc" file.
+**YOU WILL NEED TO CHANGE THIS BACK TO THE OFFICIAL RELEASE FOR THE REST OF THE LABS THIS WEEK.**
 
-YOU WILL NEED TO CHANGE THIS BACK TO THE OFFICIAL RELEASE FOR THE REST OF THE LABS THIS WEEK.
-
-Choose your shell and add the export command to the appropriate configuration file:
+Open your rc file (.bashrc, .zshrc, etc.) in your preferred editor and add this function:
 
 ```bash
-# For bash users (.bashrc or .bash_profile)
-echo 'export MESA_DIR=/path/to/mesa-2025-summerschool-prerelease' >> ~/.bashrc
+function mesa-colors {
+    export MESA_DIR=/path/to/mesa-2025-summerschool-prerelease
+    export MESASDK_ROOT=/path/to/mesasdk
+    source $MESASDK_ROOT/bin/mesasdk_init.sh
+    export OMP_NUM_THREADS=16
+    echo "environment set for 2025 Custom Colors pre-release"
+    echo "OMP_NUM_THREADS set to 16"
+}
+```
 
-# For zsh users (.zshrc)
-echo 'export MESA_DIR=/path/to/mesa-2025-summerschool-prerelease' >> ~/.zshrc
-
-# For csh/tcsh users (.cshrc)
-echo 'setenv MESA_DIR /path/to/mesa-2025-summerschool-prerelease' >> ~/.cshrc
-
-# Reload your shell configuration
+Then reload your shell configuration:
+```bash
 source ~/.bashrc  # or appropriate file
 ```
+
+After adding this function, you can type `mesa-colors` and `mesa-24081` in termial to switch between releases.
 
 #### Verify Setup
 
