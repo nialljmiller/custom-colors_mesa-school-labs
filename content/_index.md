@@ -178,7 +178,7 @@ Save this and then:
 ./rn
 ```
 
-Some synthetic lightcurve should pop up from pgstar
+A synthetic lightcurve should pop up from pgstar
 
 
 ### Complete Installation Checklist
@@ -666,25 +666,19 @@ plots/
 python plot_isochrone.py
 ```
 
-**Interactive 2D Isochrone Plot:**
+**Interactive 2D Evolution Plot:**
 
 * **Age Slider**: Drag to view a population snapshot at a specific stellar age
 * **Stellar Positions**: Interpolated from evolutionary tracks at the selected age
-* **Color Coding**: Different stellar masses shown in distinct colors
+* **Color Coding**: Different stellar masses shown in as colors
 * **Marker Shapes**: Circle (no overshooting), triangle (exponential), square (step)
-* **Note**: Each frame represents a proper **isochrone** — i.e., a constant-age cut through all models
+* Each frame represents a constant-age cut through all models
 
 **Interactive 3D Evolutionary Tracks:**
 
 * **Full Tracks**: Continuous paths through color–magnitude–age space
-* **Age Window**: Slider reveals evolutionary progress up to selected age
+* **Age Window**: Slider shows evolutionary progress up to selected age
 * **Viewing Controls**: Rotate and zoom to inspect 3D stellar trajectories
-
-**Animated Isochrone Evolution:**
-
-* **GIF Export**: Sequence of isochrones across time rendered as animation
-* **Population Aging**: Look at the changing CMD/HRD morphology with age
-* **Note**: Each frame is a snapshot isochrone; animation shows their progression
 
 **Generated Files:**
 
