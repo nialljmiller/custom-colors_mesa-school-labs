@@ -202,7 +202,7 @@ Verify each component before proceeding to the lab:
 
 **Problem**: `./install` fails with compiler errors
 ```bash
-# Solution: Check compiler setup
+# Check compiler setup
 echo $MESASDK_ROOT
 # Reload MESA SDK if needed
 source $MESASDK_ROOT/bin/mesasdk_init.sh
@@ -210,7 +210,6 @@ source $MESASDK_ROOT/bin/mesasdk_init.sh
 
 **Problem**: Colors module not found during installation
 ```bash
-# Solution: Verify directory structure
 ls $MESA_DIR/colors/private/
 # Should contain these files: colors_ctrls_io.f90  hermite_interp.f90  knn_interp.f90  linear_interp.f90  shared_funcs.f90
 ```
@@ -219,7 +218,6 @@ ls $MESA_DIR/colors/private/
 
 **Problem**: Photometric data extraction fails
 ```bash
-# Solution: Manual extraction with verbose output
 ls -a $MESA_DIR/colors/data
 #.  ..  colors_data.txz  .extraction_complete  filters  .gitattributes  stellar_models
 
@@ -349,6 +347,11 @@ Execute the stellar evolution calculation with integrated photometric output:
 ```bash
 ./clean
 ./mk
+```
+
+You should go into the inlist_project file and ensure pgstar_flag is set to true as we did before. 
+
+```bash
 ./rn
 ```
 
