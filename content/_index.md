@@ -10,7 +10,7 @@
 
 ## Overview
 
-This tutorial teaches you to integrate synthetic photometry calculations into stellar evolution models, bridging theoretical stellar physics with observational astronomy.
+This lab shows you how to add synthetic photometry to stellar evolution models, linking MESA outputs to real observational data.
 
 ### Lab Structure
 
@@ -33,7 +33,7 @@ Standard MESA provides fundamental stellar properties ($T_\text{eff}$, $\log g$,
 - Convolving with astronomical filter transmission curves
 - Providing magnitudes in standard photometric systems
 
-This enables direct comparison between stellar evolution models and observational surveys like Gaia, SDSS, and 2MASS.
+With this, you can directly compare your models to real observations from Gaia, SDSS, or 2MASS.
 
 ---
 
@@ -116,7 +116,7 @@ echo "MESA SDK: $MESASDK_ROOT"  # Should be set from previous MESA installations
 
 # Verify colors module files
 ls -a $MESA_DIR/colors/private
-# Expected output: Makefile, src/, data/, test_suite/, README
+# You should see: Makefile, src/, data/, and test_suite/.
 ```
 
 ### Step 0.3: Install MESA with Custom Colors
@@ -228,7 +228,7 @@ ls $MESA_DIR/colors/data/filters/GAIA/GAIA/
 #If you have issues with data, it is advised to delete the '.extraction_complete' file
 ```
 
-For additional support or contact the lab instructor or contact Niall Miller (via mattermost or whatever is easy)
+For additional support or contact the lab instructor or contact Niall Miller 
 
 ---
 
@@ -236,7 +236,7 @@ For additional support or contact the lab instructor or contact Niall Miller (vi
 
 ### The Synthetic Photometry Pipeline
 
-The custom colors module implements a sophisticated pipeline that converts stellar physics into observable quantities:
+The custom colors module turns model parameters into observable magnitudes using atmosphere models and filters:
 
 ```
 Stellar Parameters    →    Atmosphere Model    →    SED          →    Photometry
@@ -263,7 +263,7 @@ Where:
 
 ### Config Params
 
-Examine the colors namelist in your `inlist_project`:
+Open the colors namelist in your `inlist_project`:
 
 ```fortran
 &colors
@@ -289,17 +289,9 @@ Examine the colors namelist in your `inlist_project`:
 
 ## Part 2: Single Model with Real-Time Photometry
 
-### Learning Objectives
-- Configure and analyze MESA's colors module for synthetic photometry
-- Execute systematic real-time monitoring of stellar evolution
-- Integrate pgstar visualization with Python-based spectroscopic analysis
-- Develop proficiency in multi-terminal computational astrophysics workflows
-
----
-
 ### Step 2.1: Config Check
 
-Before initiating model evolution, examine the sophisticated photometric configuration embedded in `inlist_project`:
+Before running the model, open the configuration in `inlist_project`:
 
 ```fortran
 &colors
@@ -375,9 +367,8 @@ model    age/yr    log_Teff    log_L    Gbp      G        Grp
 
 ### Step 2.4: Pgstar Real-Time Plots
 
-**Observe the pgstar interface** as it displays multi-panel evolutionary diagnostics:
 
-#### Window 1:
+#### Window 1 (from previous labs):
 
 | Panel Position | Diagnostic Function | Physical Interpretation |
 |----------------|-------------------|------------------------|
@@ -389,17 +380,12 @@ model    age/yr    log_Teff    log_L    Gbp      G        Grp
 
 #### Window 2: G-Band Evolution
 
-The dedicated photometric window displays:
+Window 2 shows a real-time G-band light curve: age vs GAIA G magnitude
 - **X-axis**: Stellar age (years)
 - **Y-axis**: GAIA G magnitude
 - **Real-time updates**: Magnitude evolution during stellar phases
 - **Physical significance**: Direct connection between internal physics and observables
 
-**Key observation targets during pgstar monitoring**:
-1. **Pre-main sequence contraction**: Rapid T_eff and L evolution
-2. **ZAMS arrival**: Stabilization of nuclear burning
-3. **Main sequence evolution**: Gradual photometric changes
-4. **Convective core development**: Mass coordinate evolution
 
 ---
 
@@ -408,8 +394,9 @@ The dedicated photometric window displays:
 **Open a new terminal** while the MESA model is still running:
 
 ```bash
-# Navigate to analysis directory
-cd python_analysis
+# Navigate to analysis directory from within your custom colors lab folder 
+
+cd path/to/customcol_mesa-school-labs/customcol_lab/python_analysis
 ```
 
 #### Directory Structure
@@ -516,7 +503,7 @@ Move on to Part 4 and/or 5 if you are ready to move on to population analysis us
 
 ### Step 4.1: Preparing the Parameter Grid
 
-After completing all previous steps, navigate to the batch runs directory to examine the pre-configured parameter space
+After completing all previous steps, navigate to the batch runs directory to look at the pre-configured parameter space
 
 You do not actually need to run part 4, the plotting scripts in part 5 will still produce some figures with just the output from part 3.
 
@@ -706,7 +693,7 @@ python plot_isochrone.py
 **Animated Isochrone Evolution:**
 
 * **GIF Export**: Sequence of isochrones across time rendered as animation
-* **Population Aging**: Observe the changing CMD/HRD morphology with age
+* **Population Aging**: Look at the changing CMD/HRD morphology with age
 * **Note**: Each frame is a snapshot isochrone; animation shows their progression
 
 **Generated Files:**
