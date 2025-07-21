@@ -330,12 +330,31 @@ Before initiating model evolution, examine the sophisticated photometric configu
 | **Distance Scaling** | $m - M = 5\log_{10}(d/10\text{pc})$ | Apparent magnitude conversion |
 
 ---
+### Step 2.2 Running The Custom Colors Lab
+
+
+Download and extract the custom colors lab from the link at the top of this page. 
+Use the terminal to move to the lab.
+
+```bash
+cd path/to/customcol_mesa-school-labs/customcol_lab
+ls
+```
+You should see this:
+
+```bash
+batch_runs  clean  completed_inlists  inlist  inlist_pgstar  inlist_project  LOGS  make  mk  my_history_columns.list  my_profile_columns.list  photos  python_analysis  re  rn  src  star
+
+```
+
 
 ### Step 2.2: Model Execution
 
 Execute the stellar evolution calculation with integrated photometric output:
 
 ```bash
+./clean
+./mk
 ./rn
 ```
 
