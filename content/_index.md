@@ -4,7 +4,7 @@ draft = false
 title = 'Lab 4 - A Synthetic Photometry Playground: Colors, SED_Tools & SED_Model'
 +++
 
-*Authors: Niall Miller (lead TA), Eliza Frankel, Joey Mombarg - Lecturer: Yaguang Li — MESA Summer School 2026, Tetons, Wyoming*
+*Authors: Niall Miller — MESA Summer School 2026, Tetons, Wyoming*
 
 In [Lab 2](../lab-2) we switched on the MESA `colors` module and watched a single track sweep across a synthetic color–magnitude diagram. This lab is the playground that follows. We are not building anything from scratch and we are not changing any stellar physics — we are going to *play* with the colors module: swap its inputs around, watch what changes, and make some fun plots and movies out of the results. Along the way we will meet `colors`' companion tool, **SED_Tools**, which is where all of those filter and atmosphere inputs actually come from, and we will finish by meeting **SED_Model**, the pure-Python twin of MESA `colors`.
 
