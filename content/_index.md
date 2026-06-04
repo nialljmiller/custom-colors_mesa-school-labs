@@ -1,731 +1,351 @@
-# MESA Custom Colors Lab: Synthetic Photometry in Stellar Evolution
-## Complete Summer School Guide
++++
+date = '2026-04-06T13:38:04+02:00'
+draft = false
+title = 'Lab 4 - A Synthetic Photometry Playground: Colors, SED_Tools & SED_Model'
++++
 
----
-## Download links
+*Authors: Niall Miller (lead TA), Eliza Frankel, Joey Mombarg - Lecturer: Yaguang Li — MESA Summer School 2026, Tetons, Wyoming*
+
+In [Lab 2](../lab-2) we switched on the MESA `colors` module and watched a single track sweep across a synthetic color–magnitude diagram. This lab is the playground that follows. We are not building anything from scratch and we are not changing any stellar physics — we are going to *play* with the colors module: swap its inputs around, watch what changes, and make some fun plots and movies out of the results. Along the way we will meet `colors`' companion tool, **SED_Tools**, which is where all of those filter and atmosphere inputs actually come from, and we will finish by meeting **SED_Model**, the pure-Python twin of MESA `colors`.
+
+Everything here is safe to poke at. We work on a *copy* of a lab directory, every run is short, and every change is reversible — if a run goes sideways, you delete the output folder and try again. The goal is exploration, not a deliverable.
 
 {{< cards >}}
-{{< card link="https://github.com/nialljmiller/custom-colors_mesa-school-labs/raw/main/customcol_lab.zip" title="Download Lab Files" subtitle="Download all MESA simulation files, inlists, and Python scripts needed for this lab." >}}
-{{< card link="https://zenodo.org/records/16092864" title="Download MESA Color System" subtitle="Get the mesa-2025-summerschool-prerelease.zip with photometric color calculations from Zenodo." >}}
+{{< card link="https://github.com/nialljmiller/custom-colors_mesa-school-labs/raw/main/customcol_lab.zip" title="Download Lab Files" subtitle="The customcol_lab work directory, inlists, and python_analysis scripts used throughout." >}}
+{{< card link="https://github.com/nialljmiller/SED_Tools" title="SED_Tools" subtitle="Download and standardize filters and stellar atmosphere grids for the colors module." >}}
+{{< card link="https://github.com/nialljmiller/SED_Model" title="SED_Model" subtitle="The Python twin of MESA colors — forward synthetic photometry and parameter fitting." >}}
 {{< /cards >}}
+
 ---
 
-## Overview
-
-This lab shows you how to add synthetic photometry to stellar evolution models, linking MESA outputs to real observational data.
-
-### Lab Structure
+## What you will do
 
 | Part | Topic |
 |------|-------|
-| 0 | Installation & Setup |
-| 1 | Configuration & Physics |
-| 2 | Running a Model |
-| 3 | Python Visualization |
-| 4 | Batch Runs |
-| 5 | More Python Visualization |
+| 1 | Recap and a quick `colors` run |
+| 2 | Altering the `colors` module inputs |
+| 3 | SED_Tools — the companion that supplies those inputs |
+| 4 | Fun runs: plots and videos from the `python_analysis` scripts |
+| 5 | SED_Model — the Python twin (forward *and* inverse) |
 
 ---
 
-### Why Custom Colors?
+## Part 1: Recap and a quick run
 
-Standard MESA provides fundamental stellar properties ($T_\text{eff}$, $\log g$, $L_\text{bol}$), but observers measure **magnitudes** and **colors** through specific filters. The custom colors module bridges this gap by:
+The colors module turns the things MESA already computes ($T_\mathrm{eff}$, $\log g$, $L$) into the things observers actually measure: synthetic magnitudes in a chosen filter system. It does this by interpolating a stellar atmosphere grid to get an SED, convolving that SED with each filter's transmission curve, and calibrating against a reference spectrum (Vega or AB).
 
-- Computing synthetic spectral energy distributions (SEDs)
-- Convolving with astronomical filter transmission curves
-- Providing magnitudes in standard photometric systems
-
-With this, you can directly compare your models to real observations from Gaia, SDSS, or 2MASS.
-
----
-
-## Part 0: Installation and Setup
-
-### Step 0.1: Download Pre-Release Version
-
-**Important**: This lab uses an unofficial MESA pre-release with the custom colors module. The module will be integrated into the main MESA distribution in a future release **very** soon.
-
-Ensure you have downloaded both files from the links above.
-
-
-#### Extract the Archive
-
-**You cant just copy and paste these commands as you need to specify *your* filepath.**
+Let's start from a fresh copy of the colors lab so nothing we do here touches your Lab 2 work:
 
 ```bash
-# Navigate to download location (If it is in an awkward place you could move it to 'home' or put it in a directory along with your other MESA install.)
-cd /path/to/your/mesa/installations/
-
-# Extract the zip archive
-unzip mesa-2025-summerschool-prerelease.zip
-
-# Verify extraction
-ls -la mesa-2025-summerschool-prerelease/
-# Expected: Should see MESA directory structure with colors/ subdirectory
-```
-
-### Step 0.2: Environment Config
-
-#### Update MESA_DIR
-
-**!!Read Carefully!!**
-The **most critical** step is pointing your environment to the pre-release version:
-
-```bash
-# Store current MESA_DIR (for rollback if needed)
-echo "Previous MESA_DIR: $MESA_DIR"
-
-# Update to pre-release version (adjust path as needed)
-export MESA_DIR=/path/to/mesa-2025-summerschool-prerelease
-
-# Verify the change
-echo "New MESA_DIR: $MESA_DIR"
-ls $MESA_DIR/colors  # Should show colors directory
-```
-
-This step is critical and it is important to ensure you have correctly completed it. 
-If you are struggling or unsure, ask a TA. 
-
-
-#### Make Changes Persistent (optional)
-
-**YOU WILL NEED TO CHANGE THIS BACK TO THE OFFICIAL RELEASE FOR THE REST OF THE LABS THIS WEEK.**
-
-Open your rc file (.bashrc, .zshrc, etc.) in your preferred editor and add this function:
-
-```bash
-function mesa-colors {
-    export MESA_DIR=/path/to/mesa-2025-summerschool-prerelease
-    export MESASDK_ROOT=/path/to/mesasdk
-    source $MESASDK_ROOT/bin/mesasdk_init.sh
-    export OMP_NUM_THREADS=16
-    echo "environment set for 2025 Custom Colors pre-release"
-    echo "OMP_NUM_THREADS set to 16"
-}
-```
-
-Then reload your shell configuration:
-```bash
-source ~/.bashrc  # or appropriate file
-```
-
-After adding this function, you can type `mesa-colors` and `mesa-24081` in termial to switch between releases.
-
-#### Verify Setup
-
-```bash
-# Essential checks
-echo "MESA_DIR: $MESA_DIR"
-echo "MESA SDK: $MESASDK_ROOT"  # Should be set from previous MESA installations, this DOES NOT need to change. 
-
-# Verify colors module files
-ls $MESA_DIR/colors/private
-# You should see: colors_ctrls_io.f90  hermite_interp.f90  knn_interp.f90  linear_interp.f90  shared_funcs.f90
-#These are new functions that the colors module uses. 
-```
-
-### Step 0.3: Install MESA with Custom Colors
-
-#### Installation Process
-
-```bash
-cd $MESA_DIR
-
-# Clean any previous builds (optional but recommended)
-./clean
-
-# Install MESA with colors module
-./install
-
-# Verify install by looking to see if colors was properly extracted.
-cd $MESA_DIR/colors/data
-ls -a
-#You should see a hidden extracted flag file. 
-```
-
-```bash
-#If this is not here try to re install with 
-echo $MESA_DIR
-cd $MESA_DIR
-./clean; ./install
-```
-
-
-#### Verify Installation
-
-```bash
-# Check for successful completion
-ls $MESA_DIR/colors/data/filters/GAIA/GAIA #There should be a bunch of filter files G.dat, Gbp.dat ...
-
-# Test basic MESA functionality
-cd $MESA_DIR/star/test_suite/custom_colors
-./mk  # Should compile without errorsCustom colours has been made
-```
-
-And then hopefully:
-
-```bash
-Custom colours has been made
-```
-
-You can then edit the project_inlist file:
-
-```bash
-pgstar_flag = .true.  ! Enable real-time plotting (This is set to .false. for test hub -- .true. will enable a CMD and Light curves!!)
-```
-
-Save this and then:
-
-```bash
-./rn
-```
-
-A synthetic lightcurve should pop up from pgstar
-
-
-### Complete Installation Checklist
-
-Verify each component before proceeding to the lab:
-
-#### System Environment
-- `$MESA_DIR` points to pre-release version
-- MESA SDK properly loaded (`$MESASDK_ROOT` set)
-- Fortran compiler available and compatible
-
-#### MESA Installation
-- `./install` completed successfully (exit code 0)
-- Core MESA libraries present in `$MESA_DIR/lib/`
-- Basic test case compiles and runs
-
-
-### Troubleshooting Common Issues
-
-#### Installation Failures
-
-**Problem**: `./install` fails with compiler errors
-```bash
-# Check compiler setup
-echo $MESASDK_ROOT
-# Reload MESA SDK if needed
-source $MESASDK_ROOT/bin/mesasdk_init.sh
-```
-
-**Problem**: Colors module not found during installation
-```bash
-ls $MESA_DIR/colors/private/
-# Should contain these files: colors_ctrls_io.f90  hermite_interp.f90  knn_interp.f90  linear_interp.f90  shared_funcs.f90
-```
-
-#### Data Extraction Issues
-
-**Problem**: Photometric data extraction fails
-```bash
-ls -a $MESA_DIR/colors/data
-#.  ..  colors_data.txz  .extraction_complete  filters  .gitattributes  stellar_models
-
-ls $MESA_DIR/colors/data/filters/GAIA/GAIA/ 
-#GAIA  Gbp_bright.dat  Gbp.dat  Gbp_faint.dat  G.dat  Grp.dat  Grvs.dat
-
-# If this is not there, Check for permission issues or disk space and re-install
-
-#If you have issues with data, it is advised to delete the '.extraction_complete' file
-```
-
-For additional support or contact the lab instructor or contact Niall Miller 
-
----
-
-## Part 1: Understanding Custom Colors
-
-### The Synthetic Photometry Pipeline
-
-The custom colors module turns model parameters into observable magnitudes using atmosphere models and filters:
-
-```
-Stellar Parameters    →    Atmosphere Model    →    SED          →    Photometry
-(Teff, log g, [M/H])       Interpolation            Convolution      (Magnitudes)
-```
-
-#### Stellar Atmosphere Models
-
-For this implementation, we are using the **Kurucz 2003** atmosphere model grid covering:
-- **Temperature**: 3,500 K ≤ $T_\text{eff}$ ≤ 50,000 K
-- **Surface Gravity**: 0.0 ≤ $\log g$ ≤ 5.0
-- **Metallicity**: -5.0 ≤ [M/H] ≤ +1.0
-
-#### Mathematical Framework
-
-The synthetic magnitude in filter $X$ is computed as:
-
-$$m_X = -2.5 \log_{10}\left(\frac{\int F_\lambda(\lambda) S_X(\lambda) d\lambda}{\int F_\text{Vega}(\lambda) S_X(\lambda) d\lambda}\right)$$
-
-Where:
-- $F_\lambda(\lambda)$ = stellar flux density
-- $S_X(\lambda)$ = filter transmission function
-- $F_\text{Vega}(\lambda)$ = Vega reference spectrum
-
-### Config Params
-
-Open the colors namelist in your `inlist_project`:
-
-```fortran
-&colors
-   use_colors = .true.
-   instrument = '/colors/data/filters/GAIA/GAIA'
-   vega_sed = '/colors/data/stellar_models/vega_flam.csv'  
-   stellar_atm = '/colors/data/stellar_models/Kurucz2003all/'
-   distance = 3.0857d17  ! 10 parsecs for absolute magnitudes
-   make_csv = .false.     ! You can enable this for SED output
-/
-```
-
-| Parameter | Purpose | Typical Values |
-|-----------|---------|----------------|
-| `use_colors` | Enable photometry calculations | `.true.` |
-| `instrument` | Filter system directory | `'GAIA'`|
-| `vega_sed` | Vega calibration file | `vega_flam.csv` |
-| `stellar_atm` | Atmosphere model grid path | `'Kurucz2003all/'` |
-| `distance` | Distance for flux scaling | `3.0857d17` cm (10 pc) |
-| `make_csv` | Output detailed SEDs as csv files | `.false.` (performance) |
-
----
-
-## Part 2: Single Model with Real-Time Photometry
-
-### Step 2.1: Config Check
-
-Before running the model, open the configuration in `inlist_project`:
-
-```fortran
-&colors
-      ! Enable synthetic photometry during evolution
-      use_colors = .true.
-      
-      ! GAIA photometric system specification
-      instrument = '/colors/data/filters/GAIA/GAIA'
-      
-      ! Vega zero-point calibration spectrum
-      vega_sed = '/colors/data/stellar_models/vega_flam.csv'
-      
-      ! Kurucz 2003 stellar atmosphere model grid
-      stellar_atm = '/colors/data/stellar_models/Kurucz2003all/'
-      
-      ! Observational parameters
-      distance = 3.0857d17         ! 10 parsec in cm
-      make_csv = .true.            ! Enable detailed SED output
-/ ! end of colors namelist
-```
-
-| Configuration Component | Physical Implementation | Computational Output |
-|------------------------|------------------------|---------------------|
-| **Filter System** | GAIA transmission curves | G, G_BP, G_RP, G_RVS magnitudes |
-| **Atmosphere Grid** | Kurucz T_eff: 3500-50000 K | Interpolated surface flux |
-| **Calibration** | Vega spectrum reference | Magnitude zero-point: 0.0 |
-| **Distance Scaling** | $m - M = 5\log_{10}(d/10\text{pc})$ | Apparent magnitude conversion |
-
----
-### Step 2.2 Running The Custom Colors Lab
-
-
-Download and extract the custom colors lab from the link at the top of this page. 
-Use the terminal to move to the lab.
-
-```bash
-cd path/to/customcol_mesa-school-labs/customcol_lab
-ls
-```
-You should see this:
-
-```bash
-batch_runs  clean  completed_inlists  inlist  inlist_pgstar  inlist_project  LOGS  make  mk  my_history_columns.list  my_profile_columns.list  photos  python_analysis  re  rn  src  star
-
-```
-
-
-### Step 2.3: Model Execution
-
-Execute the stellar evolution calculation with integrated photometric output:
-
-```bash
+cp -r customcol_lab playground_lab
+cd playground_lab
 ./clean
 ./mk
 ```
 
-You should go into the inlist_project file and ensure pgstar_flag is set to true as we did before. 
+Open `inlist_project` and find the `&colors` namelist. It should look like this:
+
+```fortran
+&colors
+   use_colors = .true.                                 ! turn the module on
+   instrument = '/colors/data/filters/GAIA/GAIA'       ! filter system directory
+   stellar_atm = '/colors/data/stellar_models/Kurucz2003all/'  ! atmosphere grid
+   vega_sed = '/colors/data/stellar_models/vega_flam.csv'      ! zero-point reference
+   distance = 3.0857d19         ! 10 pc in cm -> absolute magnitudes
+   make_csv = .true.            ! write a full SED per filter (needed for SED plots)
+   colors_results_directory = 'SED'
+/ ! end of colors namelist
+```
+
+> [!NOTE]
+> Confirm `pgstar_flag = .true.` in `&star_job` so you get the live plots, then run a quick model:
 
 ```bash
 ./rn
 ```
 
+You now have a baseline run with Gaia magnitudes in `LOGS/`, and a full SED written to `LOGS/SED/` at each step. That baseline is the thing we will spend the rest of the lab altering and visualizing.
 
 ---
 
-### Step 2.4: Pgstar Real-Time Plots
+## Part 2: Altering the colors module inputs
 
+This is the heart of the lab. Every interesting thing the colors module does is controlled by a handful of lines in `&colors`. We will change them one at a time and rerun, so you can see exactly what each knob does. Make a habit of changing the output history name each time so your runs don't overwrite each other — that is what keeps this safe.
 
-#### Window 1 (from previous labs):
+Here is the full menu of knobs:
 
-| Panel Position | Diagnostic Function | Physical Interpretation |
-|----------------|-------------------|------------------------|
-| **Top Span** | Text Summary | Real-time parameter monitoring |
-| **Middle Left** | HR Diagram | L vs T_eff evolutionary track |
-| **Middle Right** | History Panels | Convective core mass evolution |
-| **Bottom Left** | Kippenhahn | Temporal convective structure |
-| **Bottom Right** | Mixing Profile | Current internal composition |
+| Parameter | What it controls | Try changing it to… |
+|-----------|------------------|---------------------|
+| `instrument` | which filter system you observe in | `2MASS`, `LSST`, `Generic/Johnson` |
+| `stellar_atm` | the atmosphere grid that becomes the SED | a different Kurucz `alpha` set, or a grid from SED_Tools |
+| `vega_sed` | the zero-point reference spectrum | leave as-is unless you change `mag_system` |
+| `mag_system` | the magnitude system | `'Vega'` or `'AB'` |
+| `distance` | flux scaling → apparent vs absolute mags | `3.0857d19` (10 pc) for absolute |
+| `make_csv` | write the full SED to disk per filter | `.true.` to enable SED plotting/movies |
 
-#### Window 2: G-Band Evolution
+### 2a — Distance: absolute vs apparent
 
-Window 2 shows a real-time G-band light curve: age vs GAIA G magnitude
-- **X-axis**: Stellar age (years)
-- **Y-axis**: GAIA G magnitude
-- **Real-time updates**: Magnitude evolution during stellar phases
-- **Physical significance**: Direct connection between internal physics and observables
+`distance` is the simplest knob and the one with the clearest meaning. At exactly 10 parsecs ($3.0857\times10^{19}$ cm) the magnitudes come out on the **absolute** scale. At any other distance you get **apparent** magnitudes, following the distance modulus:
 
+$$m - M = 5\log_{10}\left(\frac{d}{10\ \mathrm{pc}}\right)$$
+
+**Task:** Move your star out to 100 pc and rerun.
+
+{{< details title="Solution" closed="true" >}}
+
+```fortran
+   distance = 3.0857d20   ! 100 pc in cm -> apparent magnitudes, 5 mag fainter
+```
+
+Every magnitude in the history file should shift fainter by exactly 5 magnitudes relative to your 10 pc run. The *colors* (differences between bands) are unchanged — distance moves the whole SED up and down, it doesn't reshape it.
+
+{{< /details >}}
+
+### 2b — Magnitude system: Vega vs AB
+
+The `mag_system` knob picks the zero-point convention. `'Vega'` defines Vega to be 0.0 in every band; `'AB'` uses a flat reference in frequency. Same SED, same filters — different numbers.
+
+**Task:** Switch to the AB system and rerun. Compare the Gaia magnitudes to your Vega run.
+
+```fortran
+   mag_system = 'AB'
+```
+
+> [!TIP]
+> The AB–Vega offset is different for every filter because it depends on where in wavelength the band sits. This is exactly why observers are always careful to state which system a magnitude is in.
+
+### 2c — Swapping the filter system
+
+The `instrument` path points at a *directory* of filter transmission curves. The colors lab already ships with several. Point `instrument` at a different one and you are suddenly observing the same star with a different telescope.
+
+**Task:** Observe your star in 2MASS (near-infrared $J$, $H$, $K_s$) instead of Gaia.
+
+{{< details title="Solution" closed="true" >}}
+
+```fortran
+   instrument = '/colors/data/filters/2MASS/2MASS'
+```
+
+Your history file now has `J`, `H`, and `Ks` columns instead of `G`, `Gbp`, `Grp`. A cool star will look comparatively much brighter here than it did in Gaia — that is the whole point of going to the infrared.
+
+{{< /details >}}
+
+> [!CAUTION]
+> Syntax matters. The `instrument` path should **not** end in a `/`, but the `stellar_atm` path **should**. If the module can't find your filters, a stray slash is the first thing to check.
+
+### 2d — Swapping the atmosphere grid
+
+`stellar_atm` points at the grid that gets interpolated into an SED. Different grids cover different parameter ranges and use different physics (for example, different $\alpha$-enhancement). Swapping the grid changes the underlying spectrum before it ever hits a filter.
+
+**Task:** Try a different Kurucz `alpha` set that ships with the lab and rerun.
+
+```fortran
+   stellar_atm = '/colors/data/stellar_models/Kurucz2003all__alpha_04/'
+```
+
+If you compare a low-metallicity star across the two grids you should see small but real differences in the colors — the $\alpha$ elements reshape the SED in the blue.
+
+> [!NOTE]
+> What if you want a grid or a filter set that *doesn't* ship with the lab? That is exactly what Part 3 is for.
 
 ---
 
-### Step 2.5: Python Analysis
+## Part 3: SED_Tools — where the inputs come from
 
-**Open a new terminal** while the MESA model is still running:
+Every `instrument` and `stellar_atm` path you just played with points at a directory of files. **SED_Tools** is the companion package that downloads, standardizes, and builds those directories. If the colors module is the consumer, SED_Tools is the supplier. It also has a Python API, so you can explore synthetic photometry interactively *without running MESA at all* — which is the fastest, safest way to get a feel for how colors behave.
+
+Install it:
 
 ```bash
-# Navigate to analysis directory from within your custom colors lab folder 
-
-cd path/to/customcol_mesa-school-labs/customcol_lab/python_analysis
+pip install sed-tools
 ```
 
-#### Directory Structure
+### 3a — Getting new filters and atmospheres for `colors`
 
+SED_Tools has both an interactive menu and direct commands. The two you care about for feeding the colors module are `filters` and `spectra`:
+
+```bash
+# Download a filter transmission set (e.g. LSST)
+sed-tools filters
+
+# Download a stellar atmosphere grid
+sed-tools spectra
+
+# Build the flux cube + lookup table the colors module expects
+sed-tools rebuild
 ```
-python_analysis/
-├── SED_check.py           # Real-time spectroscopic analysis
-├── HISTORY_check.py       # Multi-panel evolutionary monitoring
-└── [additional tools]     # Extended analysis capabilities
+
+The download lands under `data/filters/<Facility>/<Instrument>/` and `data/stellar_models/<Grid>/`, which is exactly the layout the colors module reads. To use a freshly downloaded set, copy (or symlink) it into your MESA install and point your inlist at it:
+
+```bash
+# symlink is recommended so you don't duplicate large grids
+ln -s $(pwd)/data/filters/LSST/LSST $MESA_DIR/colors/data/filters/LSST/LSST
 ```
+
+```fortran
+   instrument = '/colors/data/filters/LSST/LSST'
+```
+
+That closes the loop on Part 2: SED_Tools is how you get *new* inputs to alter the colors module with.
+
+### 3b — Exploring photometry in Python (no MESA needed)
+
+The same data works directly from Python through the SED_Tools API. This is the playground inside the playground — you can interpolate a spectrum and compute synthetic magnitudes in a couple of lines. The companion notebooks (`jupyter_notebooks/01`–`09`) walk through every method; here is the gist.
+
+```python
+from sed_tools.api import SED, Filters
+
+# Load a local grid and make sure some filters are present
+sed = SED.local('Kurucz2003all')
+Filters.fetch('GAIA', 'GAIA')
+
+# Interpolate the Sun's spectrum, then get synthetic Gaia magnitudes
+spectrum = sed(teff=5777, logg=4.44, metallicity=0.0)
+phot = spectrum.photometry('Gbp', 'Grp', system='AB')
+
+for band, result in phot.items():
+    print(f"{band:4s}: {result.magnitude:.4f} AB mag")
+```
+
+**Task:** Sweep temperature at fixed $\log g$ and metallicity to build a synthetic color–temperature relation — the simplest possible "fun colors run," and it takes seconds.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+teffs = np.arange(4000, 10001, 250)
+bp_rp = []
+for t in teffs:
+    spec = sed(teff=float(t), logg=4.5, metallicity=0.0)
+    p = spec.photometry('Gbp', 'Grp', system='AB')
+    bp_rp.append(p['Gbp'].magnitude - p['Grp'].magnitude)
+
+plt.plot(teffs, bp_rp)
+plt.gca().invert_xaxis()
+plt.xlabel('Teff (K)'); plt.ylabel('BP - RP')
+plt.show()
+```
+
+> [!TIP]
+> `SED.query()` lists every grid available to download, and `Filters.query(include_remote=False)` lists what you already have locally. Notebook `09_synthetic_photometry.ipynb` extends this exact sweep into a full synthetic CMD from a catalog subset.
 
 ---
 
-## Part 3: Live Python Plots
+## Part 4: Fun runs — plots and videos
 
----
+Now the payoff. The lab ships a `python_analysis/` folder full of scripts that turn your colors output into plots and movies. None of them need any setup beyond a completed run with `make_csv = .true.`. Run them from inside `python_analysis/`.
 
-### Step 3.1: Real-Time SED
+```bash
+cd python_analysis
+ls
+# SED_check.py  plot_cmd.py  plot_colorcolor.py  plot_isochrone.py
+```
 
-You **MUST** have set ```make_csv = .true.``` for SED_check.py to work.
+### 4a — Watch the SED evolve (movie!)
 
-**Run the SED tool** while MESA continues evolution:
+`SED_check.py` reads the per-step SEDs in `LOGS/SED/` and animates them. It can either pop up a live, refreshing window or render the whole thing to a video file. This is the single most satisfying thing to watch — the spectrum visibly reddens and dims as the star evolves.
 
 ```bash
 python SED_check.py
 ```
 
-#### Advanced SED Analysis Framework
+To save it as a movie instead of watching live, set `save_video=True` in the `SEDChecker(...)` call at the bottom of the script. It writes an `.mp4` of the SED with the filter convolution overlaid.
 
-The `SED_check.py` tool plots the csv output from custom colors:
+### 4b — Color–magnitude diagram
 
-```python
-# Core monitoring parameters
-class SEDChecker:
-    wavelength_range = [600, 10000]    # Optical/near-IR coverage (Å)
-    refresh_interval = 1               # Update frequency (seconds)
-    directory = "../LOGS/SED/"         # MESA SED output location
-    xlim = [600, 10000]               # Spectral window
-    ylim = None                        # Automatic flux scaling
-```
+`plot_cmd.py` builds a CMD from your run and colors the track by a physics parameter of your choice (evolutionary phase, core hydrogen, age…). It saves a 2D CMD and, optionally, a 3D version with age on the vertical axis.
 
-#### Some Spectroscopic Features to Monitor
-
-**Balmer Jump Evolution** (λ ≈ 3646 Å):
-- **Physical origin**: Hydrogen opacity discontinuity
-- **Evolutionary signature**: Varies with surface gravity and temperature
-- **Photometric impact**: Affects blue magnitude calibrations
-
-**Paschen Continuum** (λ > 8200 Å):
-- **Physical origin**: Near-infrared hydrogen opacity
-- **Temperature sensitivity**: Strong T_eff dependence
-- **Color index impact**: Drives red photometric evolution
-
----
-
-### Step 3.2: Evolution Monitoring
-
-**Launch the python history visualizer**:
-
-```bash
-python HISTORY_check.py
-```
-
-
-The `HISTORY_check.py` system provides real-time evolutionary tracking:
-
-```python
-# Multi-panel configuration (2×2 grid)
-panel_layout = {
-    'top_left': 'Color_Magnitude_Diagram',     # Observational plane
-    'top_right': 'Classical_HR_Diagram',       # Physical parameter space
-    'bottom_left': 'Color_Evolution',          # Temporal color analysis
-    'bottom_right': 'Multi_Band_Lightcurves'   # Filter-specific evolution
-}
-```
-
-#### Panel-Specific Analysis Guidelines
-
-**Top-Left: Color-Magnitude Diagram**
-```python
-# Automated filter detection and color construction
-if 'Gbp' in filter_columns and 'Grp' in filter_columns:
-    color_index = md.Gbp - md.Grp      # GAIA color
-    magnitude = md.G                    # GAIA magnitude
-```
-
-**Top-Right: Classical HR Diagram**
-- T_eff vs Log L with inverted temperature axis
-- Direct stellar physics visualization
-
-**Bottom-Left: Color Evolution**
-- Temporal color index analysis: $\frac{d(\text{color})}{dt}$
-
-**Bottom-Right: Multi-Band Light Curves**
-- Simultaneous G, G_BP, G_RP evolution
-
----
-You are free to change the parameters of the inlist and re run this set up.
-
-Move on to Part 4 and/or 5 if you are ready to move on to population analysis using cutom colors.
-
----
----
-
-## Part 4: Batch Models and Parameter Studies (OPTIONAL)
-
-### Step 4.1: Preparing the Parameter Grid
-
-After completing all previous steps, navigate to the batch runs directory to look at the pre-configured parameter space
-
-You do not actually need to run part 4, the plotting scripts in part 5 will still produce some figures with just the output from part 3.
-
-```bash
-cd batch_runs
-cat ../Lab1.csv
-```
-
-#### Parameter Grid
-The `Lab1.csv` contains a focused parameter study designed for efficient exploration:
-
-| Parameter | Values | Physical Impact |
-|-----------|--------|----------------|
-| **Mass** | 2, 5, 7, 10 M☉ | Evolutionary timescales, final outcomes |
-| **Metallicity** | Z = 0.0014, 0.014 | Opacity, stellar winds |
-| **Overshooting** | None, exponential, step | Convective mixing efficiency |
-
-**Optional**: Edit `Lab1.csv` to customize your parameter space:
-- Add/remove mass values, metallicity values, overshooting parameters...
-
-
-### Step 4.2: Batch Execution Pipeline
-
-Execute the automated workflow (run one by one):
-
-```bash
-# Verify environment setup
-python 0_dependency_check.py
-
-# Generate individual inlists from CSV
-python 1_make_batch.py ../Lab1.csv
-
-# Validate inlist creation
-python 2_verify_inlists.py ../Lab1.csv
-
-# Execute full parameter grid
-python 3_run_batch.py
-
-# Check run completion status
-python 4_verify_outlists.py ../Lab1.csv
-
-# Extract photometric data
-python 5_construct_output.py
-```
-
----
-
-## Part 5: More Python Plots!!
-
-
-After batch has finished, move to the python analysis folder:
-
-```bash
-cd ../python_analysis
-ls *.py
-```
-
-
-### Color Magnitude Diagram
 ```bash
 python plot_cmd.py
 ```
 
-**Single Model Output:**
-- **2D CMD Plot**: Shows evolutionary track colored by central hydrogen abundance (center_h1)
-  - Red circle: Main sequence start
-  - Blue square: Final evolutionary state
-  - Color progression shows hydrogen depletion over time
-  
-- **3D CMD Plot**: Same track with age as vertical axis
-  - Green dot: Zero-age main sequence
-  - Red square: Terminal point
-  - Trajectory shows how color and magnitude evolve simultaneously
+### 4c — Color–color diagram
 
-**Batch Model Output:**
-- **Comparative 2D CMD**: Multiple evolutionary tracks overlaid
-  - Different colors represent different stellar masses
-  - Line styles distinguish overshooting prescriptions:
-    - Dashed lines: No overshooting
-    - Solid lines: Exponential overshooting  
-    - Dotted lines: Step overshooting
+`plot_colorcolor.py` plots one color against another — for a Gaia run that's $(G_{BP}-G_{RP})$ vs $(G_{RP}-G_{RVS})$. Color–color space is where stellar populations separate cleanly, so this is a good one to run after you've made several runs in Part 2.
 
-- **3D Batch Visualization**: All tracks in age-color-magnitude space
-
-**Generated Files:**
-```
-plots/
-├── cmd_gaia_center_h1.png     # Single model 2D
-├── cmd_3d_gaia_age.png        # Single model 3D
-├── batch_cmd_gaia.png         # Batch 2D comparison
-└── batch_cmd_3d_gaia_age.png  # Batch 3D comparison
-```
-
-
-### Color-Color Plots
 ```bash
 python plot_colorcolor.py
 ```
 
-**Single Model Output:**
-- **2D Color-Color Plot**: GAIA (Gbp-Grp) vs (Grp-Grvs) colored by central hydrogen abundance
-  - Red circle: Evolutionary start point
-  - Blue square: Final state
-  - Track reveals temperature-metallicity degeneracies
+### 4d — Animated isochrones (GIF!)
 
-- **3D Color-Color Plot**: Same colors with age as vertical axis
-  - Green dot: Zero-age main sequence
-  - Red square: Terminal point
-  - Shows color evolution timing
-
-**Batch Model Output:**
-- **Comparative 2D Plots**: Multiple evolutionary tracks in color-color space
-  - Color coding represents stellar mass
-  - Same as before, line styles distinguish overshooting prescriptions:
-    - Solid lines: No overshooting
-    - Dashed lines: Exponential overshooting
-    - Dash-dot lines: Step overshooting
-
-- **3D Batch Visualization**: All tracks with effective temperature as vertical axis
-
-**Generated Files:**
-```
-plots/
-├── colorcolor_gaia_center_h1.png     # Single model 2D
-├── colorcolor_3d_gaia_center_h1.png  # Single model 3D
-├── batch_colorcolor_gaia_mass.png    # Batch 2D comparison
-└── batch_colorcolor_3d_gaia_mass.png # Batch 3D comparison
-```
-
-
-### Light Curves
-
-```bash
-python plot_lc.py
-```
-
-**Single Model Output:**
-- **2D Lightcurve**: G-band magnitude vs age colored by central hydrogen abundance
-  - Red circle: Evolutionary start point
-  - Blue square: Final state  
-  - Inverted y-axis (fainter stars higher)
-
-- **3D Multi-Filter Plot**: Multiple photometric bands with wavelength as vertical axis
-  - Shows how different filters evolve simultaneously
-
-**Batch Model Output:**
-- **Comparative Lightcurves**
-  - Color coding represents stellar mass
-  - Line styles distinguish overshooting prescriptions:
-    - Solid lines: No overshooting
-    - Dashed lines: Exponential overshooting
-    - Dash-dot lines: Step overshooting
-
-- **3D Batch Visualization**: All tracks with effective temperature as vertical axis
-  - Reveals temperature-brightness evolution relationships
-
-**Generated Files:**
-```
-plots/
-├── lightcurve_g_center_h1.png           # Single model 2D
-├── lightcurve_3d_multifilter_center_h1.png # Single model 3D
-├── batch_lightcurve_g_mass.png          # Batch 2D comparison  
-└── batch_lightcurve_3d_g_mass.png       # Batch 3D comparison
-```
-
-
-### Isochrones and Tracks
+`plot_isochrone.py` works across a *batch* of runs at different masses and stitches them into an isochrone, then animates how that isochrone changes with age into a GIF. If you've collected a few runs (or use the `batch_runs/` directory that ships with the lab) this produces a genuinely lovely little movie.
 
 ```bash
 python plot_isochrone.py
 ```
 
-**Interactive 2D Evolution Plot:**
+It will ask whether you want HR-diagram coordinates, a 3D version, and an animated GIF — say yes to the GIF.
 
-* **Age Slider**: Drag to view a population snapshot at a specific stellar age
-* **Stellar Positions**: Interpolated from evolutionary tracks at the selected age
-* **Color Coding**: Different stellar masses shown in as colors
-* **Marker Shapes**: Circle (no overshooting), triangle (exponential), square (step)
-* Each frame represents a constant-age cut through all models
-
-**Interactive 3D Evolutionary Tracks:**
-
-* **Full Tracks**: Continuous paths through color–magnitude–age space
-* **Age Window**: Slider shows evolutionary progress up to selected age
-* **Viewing Controls**: Rotate and zoom to inspect 3D stellar trajectories
-
-**Generated Files:**
-
-```
-plots/
-├── isochrone_hr_age_[X.X]Myr.png      # 2D evolution plot
-├── isochrone_3d_hr_age_[X.X]Myr.png   # 3D evolutionary snapshots
-└── isochrone_hr_evolution.gif         # Animation of population evolution
-```
+> [!TIP]
+> All of these scripts save into a `plots/` directory. Mix and match: run the same star through Gaia and 2MASS (Part 2c), then make a CMD for each and put them side by side.
 
 ---
 
+## Part 5: SED_Model — the Python twin
 
-
-## Troubleshooting and FAQs
-
-### Common Installation Issues
-
-**Problem**: MESA_DIR not updated correctly
-```bash
-# Solution: Verify environment
-echo $MESA_DIR
-source ~/.bashrc  # Reload shell configuration
-```
-
-**Problem**: Python plotting failures
-
-Ensure each of the require python packages are installed 
+Everything so far has run *inside* MESA. **SED_Model** is the same synthetic-photometry calculation lifted out into pure Python — the twin of MESA `colors` — with one big addition: it runs in **both directions**. Its forward model is validated against the MESA colors reference outputs, so it is genuinely the same engine; its inverse model is the new superpower.
 
 ```bash
-# Install required packages
-pip install mesa_reader
-pip install matplotlib 
-pip install numpy 
-pip install scipy 
-pip install pandas
+git clone https://github.com/nialljmiller/SED_Model.git
+cd SED_Model
+python -m pip install -e .
+python setup.py build_ext --inplace   # builds the Fortran kernels
 ```
 
-### Help
+It reads the *same* grids and filter directories that SED_Tools builds and the colors module consumes, so all the inputs you've been playing with carry straight over.
 
-- **MESA Forum**: https://lists.mesastar.org/
-- **Lab Developer**: Niall Miller (nmille39@uwyo.edu)
-- **Summer School Instructors** 
+### 5a — Forward direction: parameters → photometry
+
+This is the colors module, in Python. Hand it stellar parameters and it returns the SED, bolometric quantities, and synthetic magnitudes in any loaded filters.
+
+```python
+from sed_model import load_grid, load_filters_from_instrument_dir, run_forward
+
+grid = load_grid("~/SED_Tools/data/stellar_models/Kurucz2003all")
+filters = load_filters_from_instrument_dir("~/SED_Tools/data/filters/Generic/Johnson")
+
+result = run_forward(
+    teff=5778, logg=4.44, meta=0.0,
+    R=6.957e10,        # 1 R_sun, in cm
+    d=3.0857e19,       # 10 pc -> absolute magnitudes
+    grid=grid, filters=filters,
+    mag_system="Vega",
+)
+
+print(result.magnitudes)   # dict of band -> magnitude
+print(result.bol_mag)      # bolometric magnitude
+```
+
+The ready-to-run `demos/demo_forward.py` does exactly this and plots the SED with the filter pivot wavelengths and a magnitude bar chart. Compare its numbers to a MESA `colors` run with the same parameters — they should agree.
+
+### 5b — Inverse direction: photometry → parameters
+
+This is what MESA `colors` *cannot* do. Give SED_Model a set of observed magnitudes with uncertainties and it runs an MCMC to recover a posterior over $(T_\mathrm{eff}, \log g, [\mathrm{M/H}])$ — and optionally $A_V$ and distance.
+
+```python
+from sed_model import run_inverse
+
+posterior = run_inverse(
+    obs_magnitudes=[5.03, 4.17],
+    obs_uncertainties=[0.01, 0.02],
+    filter_names=["G", "J"],
+    R=6.957e10, d=3.0857e19,
+    grid=grid, filters=filters,
+    mag_system="Vega",
+    n_walkers=32, n_steps=1000, n_burn=300,
+)
+
+posterior.print_summary()
+```
+
+The free/fixed/bounded behaviour of each parameter is controlled through a shared `FitParams` object, so the *same* parameter language flows in both directions — forward and inverse are two views of one model. `demos/demo_inverse.py` synthesizes observations from known parameters and shows the recovery as a corner plot, so it runs out of the box even before you have real data.
+
+> [!NOTE]
+> The two directions share `FitParams`, the grid, and the filters. A clean way to convince yourself it all hangs together: run `run_forward` to make magnitudes, feed those magnitudes straight into `run_inverse`, and check that the posterior recovers the parameters you started with. That round-trip is the heart of the SED_Model test suite.
+
+---
+
+## Where to go next
+
+You now have the full toolchain: **SED_Tools** builds the inputs, the MESA **colors** module consumes them during evolution, the `python_analysis` scripts visualize the output, and **SED_Model** reproduces the whole calculation in Python while adding parameter fitting. Pick a filter system you've never used, download it with SED_Tools, run a track through it, make a movie of the SED, and then fit the final magnitudes back with SED_Model — that single loop touches every tool in this lab.
