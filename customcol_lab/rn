@@ -2,6 +2,8 @@
 
 rm -f restart_photo
 
+cp inlist_run inlist
+
 date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S"
-./star
+./star inlist
 date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S"

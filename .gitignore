@@ -1,3 +1,30 @@
-/public
-/resources
-.hugo_build.lock
+# Python junk
+__pycache__/
+*.py[cod]
+
+# MESA build products
+customcol_lab/star
+customcol_lab/make/
+*.o
+*.mod
+*.so
+*.a
+*.exe
+
+# MESA runtime/output products
+customcol_lab/LOGS/
+customcol_lab/plots/
+customcol_lab/photos/
+customcol_lab/SED/
+customcol_lab/.mesa_temp_cache/
+
+# Common generated data/output files
+*.data
+*.csv
+*.log
+*.out
+*.tmp
+
+# macOS/editor junk, just in case
+.DS_Store
+*~
