@@ -18,7 +18,9 @@ Everything here is safe to poke at. The working directory is its own self-contai
 > This lab assumes the colors-enabled MESA you set up in the Custom Colors lab is still your `$MESA_DIR`, with its filter and atmosphere data under `$MESA_DIR/data/colors_data/`. If you skipped that lab, run its installation section first.
 
 {{< cards >}}
-{{< card link="https://github.com/nialljmiller/custom-colors_mesa-school-labs/blob/main/raw/main/synthphot_lab.zip" title="Download Lab Files" subtitle="The synthphot_lab work directory, inlist, and python_helpers scripts used throughout." >}}
+{{< card link="https://raw.githubusercontent.com/nialljmiller/custom-colors_mesa-school-labs/main/raw/main/synthphot_lab.zip" 
+    title="Download Lab Files" 
+    subtitle="The synthphot_lab work directory, inlist, and python_helpers scripts used throughout." >}}
 {{< card link="https://github.com/nialljmiller/SED_Tools" title="SED_Tools" subtitle="Download and standardize filters and stellar atmosphere grids for the colors module." >}}
 {{< card link="https://github.com/nialljmiller/SED_Model" title="SED_Model" subtitle="The Python twin of MESA colors — forward synthetic photometry and parameter fitting." >}}
 {{< /cards >}}
