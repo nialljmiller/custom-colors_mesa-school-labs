@@ -28,3 +28,6 @@ customcol_lab/.mesa_temp_cache/
 # macOS/editor junk, just in case
 .DS_Store
 *~
+synthphot_lab/
+synthphot_lab.zip
+make_synthphot_lab.sh
