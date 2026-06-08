@@ -4,7 +4,7 @@ draft = false
 title = 'Synthetic Photometry Lab'
 +++
 
-*Authors: Niall Miller (lead TA), Eliza Frankel, Joey Mombarg - Lecturer: Yaguang Li — MESA Summer School 2026, Tetons, Wyoming*
+*Authors: Niall Miller (lead TA), Eliza Frankel -- MESA Summer School 2026, Tetons, Wyoming*
 
 In the Custom Colors lab we switched on the MESA `colors` module and watched a single track sweep across a synthetic color–magnitude diagram. This lab is the playground that follows. We are not building anything from scratch and we are not changing any stellar physics — we are going to *play* with the colors module: swap its inputs around, watch what changes, and make some fun plots and movies out of the results.
 
