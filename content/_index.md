@@ -240,8 +240,8 @@ Each lands under `filters/<Facility>/<Instrument>/` as individual `.dat` transmi
 Downloading is only half of it; SED_Tools also *processes* grids, which is where the real power is:
 
 - `sed-tools rebuild --models PHOENIX` — regenerate the lookup table, HDF5 bundle, and flux cube after you've edited or added SED files.
-- `sed-tools combine` — merge several grids (e.g. Kurucz for hot stars + PHOENIX for cool stars) onto a common wavelength grid into one unified "omni" grid. Also available as `SED.combine(['Kurucz2003all', 'PHOENIX'], output='omni')`.
-- `sed-tools densify` — fill coarse $T_\mathrm{eff}$ gaps in an existing `flux_cube.bin` so interpolation is smoother.
+- `sed-tools combine` — merge several grids (e.g. Kurucz for hot stars + a cool-star grid) onto a common wavelength grid into one unified "omni" grid. From Python this is `SED.combine(['Kurucz2003all', 'PHOENIX'], output='omni', model_root='/path/to/stellar_models')`. `combine` resolves every catalog name under that single `model_root`, so both grids must already live in that one directory. `Kurucz2003all` ships with the MESA colors data rather than the SED_Tools models directory, so either set `model_root` to a directory that holds both grids, or pull `Kurucz2003all` into the SED_Tools directory first with `sed-tools spectra --models Kurucz2003all`.
+- `sed-tools densify` is broken in the current 0.1.4 release (its CLI handler passes arguments the underlying function does not accept), so run the densifier through its module entry point instead: `python -m sed_tools.grid_densifier --flux-cube IN/flux_cube.bin --output OUT/flux_cube.bin --teff-spacing 1000`. This fills coarse $T_\mathrm{eff}$ gaps in an existing `flux_cube.bin` so interpolation is smoother. The Python form is `densify_grid(src='IN/flux_cube.bin', dst='OUT/flux_cube.bin', teff_spacing=1000)` from `sed_tools.grid_densifier` (note there is no `method` argument).
 - `sed-tools ml_completer` / `ml_generator` — train a model to fill missing SEDs or generate new ones (advanced; see notebooks 05–06).
 
 ### 3e — Hand it to MESA
