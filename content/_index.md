@@ -4,7 +4,7 @@ draft = false
 title = 'Synthetic Photometry Lab'
 +++
 
-*Authors: Niall Miller (lead TA), Eliza Frankel -- MESA Summer School 2026, Tetons, Wyoming*
+*Authors: Niall Miller, Eliza Frankel -- MESA Summer School 2026, Tetons, Wyoming*
 
 In the Custom Colors lab we switched on the MESA `colors` module and watched a single track sweep across a synthetic color–magnitude diagram. This lab is the playground that follows. We are not building anything from scratch and we are not changing any stellar physics — we are going to *play* with the colors module: swap its inputs around, watch what changes, and make some fun plots and movies out of the results.
 
@@ -60,7 +60,7 @@ Open `inlist_run` and find the `&colors` namelist. The shipped block runs as-is 
 &colors
    use_colors = .true.
    instrument = '/data/colors_data/filters/GAIA/GAIA'           ! filter system directory
-   stellar_atm = '/data/colors_data/stellar_models/Kurucz2003all/'  ! atmosphere grid
+   stellar_atm = '/data/colors_data/stellar_models/Kurucz2003all__alpha_04/'  ! atmosphere grid
    vega_sed = '/data/colors_data/stellar_models/vega_flam.csv'      ! zero-point reference
    mag_system = 'Vega'          ! 'Vega' or 'AB'
    distance = 3.0857d19         ! 10 pc in cm -> absolute magnitudes
@@ -94,7 +94,7 @@ This is the heart of the lab. Every interesting thing the colors module does is 
 | Parameter | What it controls | Try changing it to… |
 |-----------|------------------|---------------------|
 | `instrument` | which filter system you observe in | `2MASS`, `JWST`, `TESS`, `Generic` |
-| `stellar_atm` | the atmosphere grid that becomes the SED | `Kurucz2003all__alpha_04`, `bbody` |
+| `stellar_atm` | the atmosphere grid that becomes the SED | `Kurucz2003all__alpha_04__alpha_04`, `bbody` |
 | `vega_sed` | the zero-point reference spectrum | leave as-is unless you change `mag_system` |
 | `mag_system` | the magnitude system | `'Vega'` or `'AB'` |
 | `distance` | flux scaling → apparent vs absolute mags | `3.0857d19` (10 pc) for absolute |
@@ -152,12 +152,12 @@ Your history file now has `J`, `H`, and `Ks` columns instead of `G`, `Gbp`, `Grp
 
 ### 2d — Swapping the atmosphere grid
 
-`stellar_atm` points at the grid that gets interpolated into an SED. Different grids cover different parameter ranges and physics. The prerelease ships `Kurucz2003all`, an $\alpha$-enhanced variant `Kurucz2003all__alpha_04`, and a simple blackbody grid `bbody`.
+`stellar_atm` points at the grid that gets interpolated into an SED. Different grids cover different parameter ranges and physics. The prerelease ships `Kurucz2003all__alpha_04`, an $\alpha$-enhanced variant `Kurucz2003all__alpha_04__alpha_04`, and a simple blackbody grid `bbody`.
 
 **Task:** Swap to the $\alpha$-enhanced grid and rerun.
 
 ```fortran
-   stellar_atm = '/data/colors_data/stellar_models/Kurucz2003all__alpha_04/'
+   stellar_atm = '/data/colors_data/stellar_models/Kurucz2003all__alpha_04__alpha_04/'
 ```
 
 The $\alpha$ elements reshape the SED in the blue, so the colors shift slightly. For a more dramatic comparison, try `bbody/` — a pure blackbody has no spectral lines at all, so the colors show you exactly how much the real atmosphere's line blanketing was doing.
@@ -240,7 +240,7 @@ Each lands under `filters/<Facility>/<Instrument>/` as individual `.dat` transmi
 Downloading is only half of it; SED_Tools also *processes* grids, which is where the real power is:
 
 - `sed-tools rebuild --models PHOENIX` — regenerate the lookup table, HDF5 bundle, and flux cube after you've edited or added SED files.
-- `sed-tools combine` — merge several grids (e.g. Kurucz for hot stars + a cool-star grid) onto a common wavelength grid into one unified "omni" grid. From Python this is `SED.combine(['Kurucz2003all', 'PHOENIX'], output='omni', model_root='/path/to/stellar_models')`. `combine` resolves every catalog name under that single `model_root`, so both grids must already live in that one directory. `Kurucz2003all` ships with the MESA colors data rather than the SED_Tools models directory, so either set `model_root` to a directory that holds both grids, or pull `Kurucz2003all` into the SED_Tools directory first with `sed-tools spectra --models Kurucz2003all`.
+- `sed-tools combine` — merge several grids (e.g. Kurucz for hot stars + a cool-star grid) onto a common wavelength grid into one unified "omni" grid. From Python this is `SED.combine(['Kurucz2003all__alpha_04', 'PHOENIX'], output='omni', model_root='/path/to/stellar_models')`. `combine` resolves every catalog name under that single `model_root`, so both grids must already live in that one directory. `Kurucz2003all__alpha_04` ships with the MESA colors data rather than the SED_Tools models directory, so either set `model_root` to a directory that holds both grids, or pull `Kurucz2003all__alpha_04` into the SED_Tools directory first with `sed-tools spectra --models Kurucz2003all__alpha_04`.
 - `sed-tools densify` is broken in the current 0.1.4 release (its CLI handler passes arguments the underlying function does not accept), so run the densifier through its module entry point instead: `python -m sed_tools.grid_densifier --flux-cube IN/flux_cube.bin --output OUT/flux_cube.bin --teff-spacing 1000`. This fills coarse $T_\mathrm{eff}$ gaps in an existing `flux_cube.bin` so interpolation is smoother. The Python form is `densify_grid(src='IN/flux_cube.bin', dst='OUT/flux_cube.bin', teff_spacing=1000)` from `sed_tools.grid_densifier` (note there is no `method` argument).
 - `sed-tools ml_completer` / `ml_generator` — train a model to fill missing SEDs or generate new ones (advanced; see notebooks 05–06).
 
@@ -269,7 +269,7 @@ The same idea applies to a downloaded filter set — symlink it under `$MESA_DIR
 The same data works directly from Python, which is the fastest, safest way to build intuition. Load a local grid, interpolate a spectrum at any $(T_\mathrm{eff}, \log g, [\mathrm{M/H}])$, and convolve it with a filter set:
 
 ```python
-sed = SED.local('PHOENIX')                              # or 'Kurucz2003all'
+sed = SED.local('PHOENIX')                              # or 'Kurucz2003all__alpha_04'
 spec = sed(teff=6000, logg=2.0, metallicity=-1.0)       # a point on the blue loop
 phot = spec.photometry('GAIA', system='AB')             # dict: band -> PhotometryResult
 
@@ -393,7 +393,7 @@ from sed_model import load_grid, load_filters_from_instrument_dir, run_forward
 
 # Use any grid/filters SED_Tools built — e.g. the colors data, or your PHOENIX download
 cdir = os.path.expandvars("$MESA_DIR/data/colors_data")
-grid = load_grid(f"{cdir}/stellar_models/Kurucz2003all")
+grid = load_grid(f"{cdir}/stellar_models/Kurucz2003all__alpha_04")
 filters = load_filters_from_instrument_dir(f"{cdir}/filters/GAIA/GAIA")
 
 result = run_forward(
